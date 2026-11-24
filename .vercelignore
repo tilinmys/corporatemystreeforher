@@ -1,0 +1,7 @@
+scripts/
+*.py
+CLAUDE.md
+.oxlintrc.json
+node_modules
+dist
+.git
