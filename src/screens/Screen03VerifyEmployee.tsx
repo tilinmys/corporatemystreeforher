@@ -334,7 +334,7 @@ export function Screen03VerifyEmployee() {
             onClick={handleSkipToHome}
             className="w-full text-center text-xs text-slate-500 hover:text-slate-800 transition-colors py-1 hover:underline"
           >
-            Demo: existing Her user → skip to Home
+            Already verified? Continue to Home →
           </button>
         </div>
 

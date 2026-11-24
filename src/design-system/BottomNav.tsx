@@ -22,7 +22,7 @@ export function BottomNav({ active }: { active: TabId }) {
   return (
     <nav
       aria-label="Primary app navigation"
-      className="sticky bottom-0 z-30 flex items-center justify-around h-15 bg-white/95 backdrop-blur-md border-t border-rose-100 px-2 shrink-0 pb-safe sm:pb-0 shadow-[0_-4px_20px_-8px_rgba(42,14,26,0.06)]"
+      className="sticky bottom-0 z-30 flex items-center justify-around h-14 bg-white/95 backdrop-blur-md border-t border-purple-100 px-2 shrink-0 pb-safe sm:pb-0 shadow-[0_-4px_20px_-8px_rgba(88,28,135,0.08)]"
     >
       {TABS.map((tab) => {
         const Icon = tab.icon
@@ -35,17 +35,17 @@ export function BottomNav({ active }: { active: TabId }) {
             onClick={() => setActiveScreen(tab.targetScreen)}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-              'flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 rounded-xl transition-all active:scale-95',
+              'flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all active:scale-95',
               isActive
-                ? 'text-[#2A0E1A] font-bold'
-                : 'text-slate-400 hover:text-rose-800 font-medium',
+                ? 'text-[#3B0764] font-bold'
+                : 'text-slate-400 hover:text-purple-700 font-medium',
               focusRing,
             )}
           >
             <span
               className={cn(
                 'flex items-center justify-center w-11 h-6.5 rounded-full transition-colors',
-                isActive ? 'bg-rose-100 text-[#2A0E1A]' : 'bg-transparent',
+                isActive ? 'bg-purple-100 text-[#4C1D95]' : 'bg-transparent',
               )}
             >
               <Icon className="size-4" strokeWidth={isActive ? 2.2 : 1.75} aria-hidden />

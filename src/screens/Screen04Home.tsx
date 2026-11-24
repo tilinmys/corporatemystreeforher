@@ -1,9 +1,9 @@
+import { motion } from 'framer-motion'
 import {
   Activity,
-  ArrowRight,
   Bell,
   Building2,
-  Droplets,
+  CalendarDays,
   FileText,
   FlaskConical,
   Stethoscope,
@@ -24,10 +24,6 @@ export function Screen04Home() {
   const user = useHerCorporateStore((s) => s.user)
 
   const metrics = computeCycleMetrics(lastPeriodStart, periodLength, cycleLength)
-  const isOvulatory =
-    metrics.phaseLabel.toLowerCase().includes('ovul') ||
-    metrics.phaseLabel.toLowerCase().includes('fertile')
-
   const upcomingDoctor =
     PANEL_DOCTORS.find((d) => d.id === confirmedBooking?.doctorId) ?? PANEL_DOCTORS[0]
 
@@ -37,13 +33,13 @@ export function Screen04Home() {
   return (
     <div className="flex flex-col justify-between min-h-full bg-[#FAF7F5] text-slate-800">
       
-      {/* TOP HEADER */}
-      <header className="sticky top-0 z-30 flex items-center justify-between h-13 px-4 bg-white/95 backdrop-blur-md border-b border-rose-100">
+      {/* HEADER: Clean Greeting + Employer Pill + Bell */}
+      <header className="sticky top-0 z-30 flex items-center justify-between h-12.5 px-4 bg-white/95 backdrop-blur-md border-b border-purple-100 shrink-0">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setActiveScreen('03b')}
-            className="size-9 rounded-full bg-gradient-to-br from-rose-100 to-rose-200 border border-rose-300/60 flex items-center justify-center font-display text-sm font-bold text-[#2A0E1A] shadow-2xs"
+            className="size-8.5 rounded-full bg-gradient-to-br from-purple-100 to-rose-100 border border-purple-300/70 flex items-center justify-center font-display text-sm font-bold text-[#3B0764]"
           >
             {user.avatar}
           </button>
@@ -51,8 +47,8 @@ export function Screen04Home() {
             <h1 className="font-display text-sm font-bold text-slate-900 leading-tight">
               Hi, {firstName}
             </h1>
-            <p className="text-[11px] font-medium text-rose-800/80">
-              {employeeLink ? `Her · ${employeeLink.company} linked` : 'Her · Personal space'}
+            <p className="text-[10px] font-semibold text-purple-800">
+              {employeeLink ? employeeLink.company : 'Her Care'}
             </p>
           </div>
         </div>
@@ -62,41 +58,36 @@ export function Screen04Home() {
           onClick={() => setActiveScreen('16')}
           aria-label="Notifications"
           className={cn(
-            'grid size-8.5 place-items-center rounded-xl bg-rose-50/70 text-rose-900 hover:bg-rose-100 active:scale-95 transition-all relative',
+            'grid size-8 place-items-center rounded-xl bg-purple-50 text-[#4C1D95] hover:bg-purple-100 active:scale-95 transition-all relative',
             focusRing,
           )}
         >
-          <Bell className="size-4" strokeWidth={1.8} />
+          <Bell className="size-4" strokeWidth={1.9} />
           <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-rose-600 ring-2 ring-white" />
         </button>
       </header>
 
-      {/* MAIN CONTENT BODY */}
-      <div className="flex-1 px-4 py-3 space-y-3">
+      {/* MAIN BODY — ZERO SCROLL COMPACT PERSONA GRID */}
+      <div className="flex-1 px-3.5 py-2.5 flex flex-col justify-between gap-2.5">
         
-        {/* CARD 1: OVULATORY WINDOW / CYCLE TRACKER (Rich Pink & White Grid Card) */}
-        <div className="rounded-3xl border border-rose-200/90 bg-gradient-to-br from-[#FFE4EC] via-[#FFF4F7] to-white p-3.5 shadow-xs space-y-2.5">
+        {/* 1. CYCLE & OVULATORY WINDOW CARD (Distinct Pink + Purple Contrast) */}
+        <div className="rounded-2xl border-2 border-rose-300/80 bg-gradient-to-br from-[#FFE4EC] via-[#FDF2F8] to-[#F3E8FF] p-3 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {/* Glowing Pink Day Badge */}
-              <div className="size-13 rounded-2xl bg-gradient-to-br from-rose-500 via-pink-600 to-[#881337] text-white flex flex-col items-center justify-center shadow-sm shrink-0 border border-rose-300/40">
-                <span className="text-[9px] font-semibold uppercase tracking-wider opacity-90 leading-none">
+            <div className="flex items-center gap-2.5">
+              <div className="size-11.5 rounded-xl bg-gradient-to-br from-[#BE123C] to-[#581C87] text-white flex flex-col items-center justify-center shadow-xs shrink-0">
+                <span className="text-[8px] font-bold uppercase tracking-wider opacity-85 leading-none">
                   Day
                 </span>
-                <span className="font-display text-lg font-bold leading-tight tabular-nums">
+                <span className="font-display text-base font-bold leading-tight tabular-nums">
                   {metrics.cycleDay}
                 </span>
               </div>
 
-              <div className="space-y-0.5">
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-rose-700">
-                  <Droplets className="size-3 text-rose-500" />
-                  {isOvulatory ? 'Peak Fertility' : 'Cycle Tracker'}
-                </span>
-                <h2 className="font-display text-base font-bold text-[#2A0E1A] leading-tight">
+              <div>
+                <h2 className="font-display text-sm font-bold text-[#3B0764] leading-tight">
                   {metrics.phaseLabel}
                 </h2>
-                <p className="text-[11px] font-medium text-rose-900/75">
+                <p className="text-[11px] font-semibold text-rose-800">
                   Next period in {metrics.daysUntilNextPeriod} days
                 </p>
               </div>
@@ -106,16 +97,16 @@ export function Screen04Home() {
               type="button"
               onClick={() => setActiveScreen('03c')}
               className={cn(
-                'h-8 px-3.5 rounded-full bg-white border border-rose-200 text-xs font-bold text-[#2A0E1A] hover:bg-rose-50 active:scale-95 transition-all shadow-2xs shrink-0',
+                'inline-flex items-center gap-1 h-7.5 px-3 rounded-full bg-white border border-purple-200 text-[11px] font-bold text-[#4C1D95] hover:bg-purple-50 active:scale-95 transition-all shadow-2xs',
                 focusRing,
               )}
             >
-              Log
+              <CalendarDays className="size-3" />
+              <span>Log</span>
             </button>
           </div>
 
-          {/* Pink Mini Phase Bar inside Card */}
-          <div className="grid grid-cols-7 gap-1 pt-0.5">
+          <div className="grid grid-cols-7 gap-1">
             {Array.from({ length: 7 }, (_, i) => {
               const offsetDay = metrics.cycleDay - 3 + i
               const isToday = i === 3
@@ -126,12 +117,12 @@ export function Screen04Home() {
                   type="button"
                   onClick={() => setActiveScreen('03f')}
                   className={cn(
-                    'h-6 rounded-lg text-[10px] font-bold tabular-nums flex items-center justify-center transition-all',
+                    'h-5.5 rounded-md text-[10px] font-bold tabular-nums flex items-center justify-center transition-all',
                     isToday
-                      ? 'bg-[#2A0E1A] text-white shadow-2xs'
+                      ? 'bg-[#3B0764] text-white shadow-2xs'
                       : isFertileZone
-                        ? 'bg-rose-200/80 text-rose-950'
-                        : 'bg-white/80 text-slate-500 border border-rose-100',
+                        ? 'bg-rose-200/90 text-rose-950'
+                        : 'bg-white/85 text-slate-500 border border-purple-100',
                   )}
                 >
                   {offsetDay > 0 ? offsetDay : offsetDay + metrics.cycleLength}
@@ -141,198 +132,203 @@ export function Screen04Home() {
           </div>
         </div>
 
-        {/* SECTION 2: CORPORATE CARE LEDGER */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-xs font-bold uppercase tracking-wider text-rose-900/80">
-              {employeeLink ? 'Corporate benefits' : 'Health benefits'}
-            </h2>
-            <button
-              type="button"
-              onClick={() => setActiveScreen('03b')}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#2A0E1A] bg-rose-50 border border-rose-200 rounded-full px-2.5 py-0.5 hover:bg-rose-100 transition-colors"
-            >
-              <Building2 className="size-3 text-rose-700" />
-              <span>{employeeLink ? employeeLink.company : 'Link company'}</span>
-            </button>
-          </div>
-
-          {showCorpCard && employeeLink ? (
-            <div className="rounded-2xl border border-rose-100 bg-white p-3.5 shadow-2xs">
-              <div className="grid grid-cols-3 text-center divide-x divide-rose-100">
-                <div className="px-1">
-                  <span className="font-display text-base font-bold text-[#2A0E1A] tabular-nums">
-                    {employeeLink.consultsLeft} / {employeeLink.consultsTotal}
-                  </span>
-                  <p className="text-[10px] font-medium text-slate-500 mt-0.5">Free consults</p>
-                </div>
-                <div className="px-1">
-                  <span className="font-display text-base font-bold text-[#2A0E1A] tabular-nums">
-                    {employeeLink.healthChecksLeft} / {employeeLink.healthChecksTotal}
-                  </span>
-                  <p className="text-[10px] font-medium text-slate-500 mt-0.5">Health check</p>
-                </div>
-                <div className="px-1">
-                  <span className="font-display text-base font-bold text-rose-700 tabular-nums">
-                    ₹{employeeLink.walletLeft.toLocaleString('en-IN')}
-                  </span>
-                  <p className="text-[10px] font-medium text-slate-500 mt-0.5">Test wallet</p>
-                </div>
-              </div>
-            </div>
-          ) : employeeLink ? (
-            <button
-              type="button"
-              onClick={() => setActiveScreen('03b')}
-              className="w-full rounded-2xl border border-rose-100 bg-white px-3.5 py-2.5 flex items-center justify-between text-xs text-slate-600 hover:bg-rose-50/40"
-            >
-              <span>Corporate benefits hidden on Home</span>
-              <span className="font-semibold text-rose-800">Show →</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setActiveScreen('02')}
-              className="w-full rounded-2xl border border-dashed border-rose-300 bg-rose-50/60 px-3.5 py-3 flex items-center justify-between text-left hover:bg-rose-50 transition-colors"
-            >
-              <div>
-                <p className="text-xs font-bold text-[#2A0E1A]">Unlock ₹0 employer benefits</p>
-                <p className="text-[11px] text-slate-600">Free consults & blood tests via HR</p>
-              </div>
-              <ArrowRight className="size-4 text-rose-700 shrink-0" />
-            </button>
-          )}
-        </div>
-
-        {/* SECTION 3: 2x2 PINK & WHITE SEPARATED ACTION GRID */}
-        <div className="grid grid-cols-2 gap-2.5">
+        {/* 2. PERSONA-FIRST PRIORITY GRID (Color-separated by click priority) */}
+        <div className="grid grid-cols-2 gap-2">
+          {/* #1 Highest Click Persona: Consult Specialist (Deep Royal Purple) */}
           <button
             type="button"
             onClick={() => setActiveScreen('05')}
             className={cn(
-              'rounded-2xl border border-rose-200/80 bg-rose-50/75 p-3 flex items-center gap-2.5 shadow-2xs hover:border-rose-400 hover:bg-rose-100/70 transition-all active:scale-[0.98] text-left group',
+              'rounded-2xl border-2 border-[#3B0764] bg-gradient-to-br from-[#4C1D95] to-[#6B21A8] p-3 flex items-center gap-2.5 text-left text-white shadow-sm hover:brightness-110 active:scale-[0.98] transition-all',
               focusRing,
             )}
           >
-            <div className="size-9 rounded-xl bg-white text-rose-700 flex items-center justify-center shrink-0 border border-rose-200/70 shadow-2xs group-hover:scale-105 transition-transform">
-              <Stethoscope className="size-4.5" strokeWidth={1.8} />
-            </div>
+            <span className="size-8.5 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0">
+              <Stethoscope className="size-4 text-rose-200" strokeWidth={2} />
+            </span>
             <div className="min-w-0">
-              <span className="block text-xs font-bold text-[#2A0E1A] truncate">Book consult</span>
-              <span className="block text-[10px] text-rose-800/80 truncate">Video / Clinic</span>
+              <span className="block text-xs font-bold leading-tight truncate">Book Doctor</span>
+              <span className="block text-[10px] text-purple-200 truncate">₹0 Consult</span>
             </div>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveScreen('13')}
-            className={cn(
-              'rounded-2xl border border-rose-100 bg-white p-3 flex items-center gap-2.5 shadow-2xs hover:border-rose-300 hover:bg-rose-50/40 transition-all active:scale-[0.98] text-left group',
-              focusRing,
-            )}
-          >
-            <div className="size-9 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100 group-hover:scale-105 transition-transform">
-              <FlaskConical className="size-4.5" strokeWidth={1.8} />
-            </div>
-            <div className="min-w-0">
-              <span className="block text-xs font-bold text-slate-900 truncate">Blood test</span>
-              <span className="block text-[10px] text-slate-500 truncate">Home pickup</span>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveScreen('12')}
-            className={cn(
-              'rounded-2xl border border-rose-100 bg-white p-3 flex items-center gap-2.5 shadow-2xs hover:border-rose-300 hover:bg-rose-50/40 transition-all active:scale-[0.98] text-left group',
-              focusRing,
-            )}
-          >
-            <div className="size-9 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100 group-hover:scale-105 transition-transform">
-              <FileText className="size-4.5" strokeWidth={1.8} />
-            </div>
-            <div className="min-w-0">
-              <span className="block text-xs font-bold text-slate-900 truncate">Prescriptions</span>
-              <span className="block text-[10px] text-slate-500 truncate">View medicines</span>
-            </div>
-          </button>
-
+          {/* #2 High Priority: Lab Reports (Distinct Pink Alert Surface) */}
           <button
             type="button"
             onClick={() => setActiveScreen('15')}
             className={cn(
-              'rounded-2xl border border-rose-200/80 bg-rose-50/75 p-3 flex items-center gap-2.5 shadow-2xs hover:border-rose-400 hover:bg-rose-100/70 transition-all active:scale-[0.98] text-left group',
+              'rounded-2xl border-2 border-rose-300 bg-[#FFF0F5] p-3 flex items-center gap-2.5 text-left hover:border-rose-400 active:scale-[0.98] transition-all relative',
               focusRing,
             )}
           >
-            <div className="size-9 rounded-xl bg-white text-rose-700 flex items-center justify-center shrink-0 border border-rose-200/70 shadow-2xs group-hover:scale-105 transition-transform">
-              <Activity className="size-4.5" strokeWidth={1.8} />
-            </div>
+            <span className="size-8.5 rounded-xl bg-white border border-rose-200 text-rose-600 flex items-center justify-center shrink-0">
+              <Activity className="size-4" strokeWidth={2} />
+            </span>
             <div className="min-w-0">
-              <span className="block text-xs font-bold text-[#2A0E1A] truncate">Lab reports</span>
-              <span className="block text-[10px] text-rose-800/80 truncate">2 insights</span>
+              <span className="block text-xs font-bold text-[#881337] leading-tight truncate">Lab Reports</span>
+              <span className="block text-[10px] font-bold text-rose-600 truncate">2 Low alerts</span>
+            </div>
+          </button>
+
+          {/* #3: My Prescriptions (Crisp White + Purple Border) */}
+          <button
+            type="button"
+            onClick={() => setActiveScreen('12')}
+            className={cn(
+              'rounded-2xl border-2 border-purple-200 bg-white p-3 flex items-center gap-2.5 text-left hover:border-purple-400 active:scale-[0.98] transition-all',
+              focusRing,
+            )}
+          >
+            <span className="size-8.5 rounded-xl bg-purple-50 border border-purple-100 text-[#581C87] flex items-center justify-center shrink-0">
+              <FileText className="size-4" strokeWidth={2} />
+            </span>
+            <div className="min-w-0">
+              <span className="block text-xs font-bold text-slate-900 leading-tight truncate">Prescriptions</span>
+              <span className="block text-[10px] text-slate-500 truncate">3 Medicines</span>
+            </div>
+          </button>
+
+          {/* #4: Blood Test Pickup (Soft Lilac + Purple Border) */}
+          <button
+            type="button"
+            onClick={() => setActiveScreen('13')}
+            className={cn(
+              'rounded-2xl border-2 border-purple-200 bg-[#F5F3FF] p-3 flex items-center gap-2.5 text-left hover:border-purple-400 active:scale-[0.98] transition-all',
+              focusRing,
+            )}
+          >
+            <span className="size-8.5 rounded-xl bg-white border border-purple-200 text-[#581C87] flex items-center justify-center shrink-0">
+              <FlaskConical className="size-4" strokeWidth={2} />
+            </span>
+            <div className="min-w-0">
+              <span className="block text-xs font-bold text-[#3B0764] leading-tight truncate">Blood Test</span>
+              <span className="block text-[10px] text-purple-700 truncate">Home pickup</span>
             </div>
           </button>
         </div>
 
-        {/* CARD 4: UPCOMING CONSULTATION (Live from Zustand store) */}
+        {/* 3. GLASSMORPHIC ANIMATED CONSULTATION BOOKING CARD */}
         {confirmedBooking ? (
-          <div className="rounded-2xl border border-rose-200/70 bg-white p-3.5 space-y-2.5 shadow-2xs">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-800">
-                Upcoming consult
-              </span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                <Video className="size-2.5" /> {confirmedBooking.dateLabel}, {confirmedBooking.slotTime}
-              </span>
-            </div>
+          <div className="relative rounded-2xl overflow-hidden p-3.5 bg-gradient-to-br from-[#3B0764]/95 via-[#581C87]/90 to-[#9D174D]/90 backdrop-blur-xl border border-white/30 text-white shadow-[0_14px_32px_-10px_rgba(88,28,135,0.48)]">
+            {/* Ambient animated glow blobs inside glass */}
+            <motion.div
+              aria-hidden
+              animate={{ x: [-12, 16, -12], y: [-6, 10, -6] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-6 -right-6 size-28 rounded-full bg-rose-400/35 blur-2xl pointer-events-none"
+            />
+            <motion.div
+              aria-hidden
+              animate={{ x: [10, -14, 10] }}
+              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -bottom-8 -left-6 size-28 rounded-full bg-purple-400/30 blur-2xl pointer-events-none"
+            />
 
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="size-10 rounded-xl bg-gradient-to-br from-rose-100 to-rose-200 text-[#2A0E1A] font-display font-bold text-xs flex items-center justify-center shrink-0">
-                  {upcomingDoctor.initials}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-display text-sm font-bold text-slate-900 truncate">
-                    {upcomingDoctor.name}
-                  </h3>
-                  <p className="text-[11px] text-slate-500 truncate">
-                    {upcomingDoctor.role} · {confirmedBooking.consultType === 'video' ? 'Video' : 'In-clinic'}
-                  </p>
-                </div>
+            {/* Sweeping diagonal liquid glass light shimmer */}
+            <motion.div
+              aria-hidden
+              initial={{ x: '-140%' }}
+              animate={{ x: '260%' }}
+              transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
+              className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 pointer-events-none"
+            />
+
+            <div className="relative z-10 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-purple-100">
+                  <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Upcoming Consult
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-white/15 backdrop-blur-md border border-white/20 px-2 py-0.5 rounded-full">
+                  <Video className="size-2.5 text-rose-200" />
+                  {confirmedBooking.dateLabel}, {confirmedBooking.slotTime}
+                </span>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setActiveScreen('09')}
-                className={cn(
-                  'h-9 px-4 rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] text-xs font-semibold text-white shadow-2xs active:scale-95 transition-all shrink-0',
-                  focusRing,
-                )}
-              >
-                Join call
-              </button>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="size-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white font-display font-bold text-xs flex items-center justify-center shrink-0">
+                    {upcomingDoctor.initials}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-display text-sm font-bold text-white truncate">
+                      {upcomingDoctor.name}
+                    </h3>
+                    <p className="text-[11px] text-purple-100/85 truncate">
+                      {upcomingDoctor.role}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveScreen('09')}
+                  className={cn(
+                    'h-8.5 px-4 rounded-xl bg-white text-[#3B0764] hover:bg-rose-50 text-xs font-bold shadow-sm active:scale-95 transition-all shrink-0',
+                    focusRing,
+                  )}
+                >
+                  Join call
+                </button>
+              </div>
             </div>
           </div>
         ) : (
           <button
             type="button"
             onClick={() => setActiveScreen('05')}
-            className="w-full rounded-2xl border border-rose-100 bg-white p-3.5 flex items-center justify-between text-left hover:bg-rose-50/40"
+            className="w-full rounded-2xl border-2 border-purple-200 bg-white p-3 flex items-center justify-between text-left hover:bg-purple-50/40"
           >
-            <div>
-              <p className="text-xs font-bold text-slate-900">No upcoming consults</p>
-              <p className="text-[11px] text-slate-500">Tap to pick a specialist slot</p>
-            </div>
-            <span className="px-3 py-1.5 rounded-xl bg-[#2A0E1A] text-white text-xs font-semibold">
+            <span className="text-xs font-bold text-slate-900">Book a specialist slot</span>
+            <span className="px-3 py-1 rounded-xl bg-[#4C1D95] text-white text-xs font-semibold">
               Book
             </span>
           </button>
         )}
 
+        {/* 4. COMPACT CORPORATE CREDITS STRIP (Distinct White & Purple Border) */}
+        {showCorpCard && employeeLink ? (
+          <button
+            type="button"
+            onClick={() => setActiveScreen('03b')}
+            className="w-full rounded-2xl border border-purple-200 bg-white px-3 py-2.5 grid grid-cols-3 text-center divide-x divide-purple-100 shadow-2xs hover:border-purple-300 transition-colors"
+          >
+            <div>
+              <span className="font-display text-sm font-bold text-[#3B0764] tabular-nums">
+                {employeeLink.consultsLeft}/{employeeLink.consultsTotal}
+              </span>
+              <p className="text-[10px] text-slate-500">Consults</p>
+            </div>
+            <div>
+              <span className="font-display text-sm font-bold text-[#3B0764] tabular-nums">
+                {employeeLink.healthChecksLeft}/{employeeLink.healthChecksTotal}
+              </span>
+              <p className="text-[10px] text-slate-500">Checkup</p>
+            </div>
+            <div>
+              <span className="font-display text-sm font-bold text-rose-700 tabular-nums">
+                ₹{employeeLink.walletLeft.toLocaleString('en-IN')}
+              </span>
+              <p className="text-[10px] text-slate-500">Test wallet</p>
+            </div>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setActiveScreen('02')}
+            className="w-full rounded-2xl border border-dashed border-purple-300 bg-white px-3.5 py-2.5 flex items-center justify-between text-xs hover:bg-purple-50/40 transition-colors"
+          >
+            <span className="font-semibold text-[#3B0764] flex items-center gap-1.5">
+              <Building2 className="size-3.5 text-purple-700" />
+              Link employer for ₹0 care
+            </span>
+            <span className="font-bold text-rose-700">Link →</span>
+          </button>
+        )}
+
       </div>
 
-      {/* DOCKED BOTTOM NAVBAR WITH ICONS */}
+      {/* DOCKED NAVBAR */}
       <BottomNav active="today" />
     </div>
   )

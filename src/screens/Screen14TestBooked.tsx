@@ -165,11 +165,11 @@ export function Screen14TestBooked() {
           type="button"
           onClick={handleDemoReport}
           className={cn(
-            'flex h-11 w-full items-center justify-center rounded-xl border border-slate-300 bg-white hover:bg-slate-50 px-4 text-xs font-semibold text-slate-800 shadow-2xs active:scale-[0.99] transition-all',
+            'flex h-11 w-full items-center justify-center rounded-xl border border-purple-200 bg-white hover:bg-purple-50 px-4 text-xs font-semibold text-[#4C1D95] shadow-2xs active:scale-[0.99] transition-all',
             focusRing,
           )}
         >
-          Demo: view report
+          View lab report
         </button>
       </div>
 

@@ -1,143 +1,104 @@
-import { Bell, ChevronLeft, Download } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ChevronLeft, Download, Stethoscope } from 'lucide-react'
 import { cn, focusRing } from '../lib/cn'
-import { useHerCorporateStore } from '../store/useHerCorporateStore'
+import { PANEL_DOCTORS, useHerCorporateStore } from '../store/useHerCorporateStore'
 
 interface LabResult {
   parameter: string
   range: string
   value: string
-  status: 'Normal' | 'Low' | 'High'
+  status: 'Normal' | 'Low'
 }
 
-const RESULTS: LabResult[] = [
-  { parameter: 'Haemoglobin', range: 'Range 12–15', value: '11.2 g/dL', status: 'Low' },
-  { parameter: 'TSH', range: 'Range 0.4–4.0', value: '3.1 µIU/mL', status: 'Normal' },
-  { parameter: 'Vitamin D', range: 'Range 30–100', value: '18 ng/mL', status: 'Low' },
-  { parameter: 'HbA1c', range: 'Range < 5.7', value: '5.3 %', status: 'Normal' },
+const ATTENTION_RESULTS: LabResult[] = [
+  { parameter: 'Haemoglobin', range: '12–15', value: '11.2 g/dL', status: 'Low' },
+  { parameter: 'Vitamin D', range: '30–100', value: '18 ng/mL', status: 'Low' },
+]
+
+const NORMAL_RESULTS: LabResult[] = [
+  { parameter: 'TSH', range: '0.4–4.0', value: '3.1 µIU/mL', status: 'Normal' },
+  { parameter: 'HbA1c', range: '< 5.7%', value: '5.3 %', status: 'Normal' },
 ]
 
 export function Screen15LabReport() {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
+  const confirmedBooking = useHerCorporateStore((s) => s.confirmedBooking)
+  const selectedDoctorId = useHerCorporateStore((s) => s.selectedDoctorId)
+  const pushBanner = useHerCorporateStore((s) => s.pushBanner)
+
+  const doc =
+    PANEL_DOCTORS.find((d) => d.id === (confirmedBooking?.doctorId || selectedDoctorId)) ??
+    PANEL_DOCTORS[0]
 
   const handleDownload = () => {
-    alert('Verified Clinical Lab Report PDF downloaded.')
-  }
-
-  const handleFollowUp = () => {
-    setActiveScreen('05')
+    pushBanner({
+      title: 'Report saved',
+      body: 'Verified blood report PDF saved.',
+      targetScreen: '15',
+    })
   }
 
   return (
     <div className="flex flex-col justify-between min-h-full bg-[#FAF7F5] text-slate-800">
       
-      {/* 
-        TOP HEADER:
-        - Back arrow <
-        - Title "Lab report"
-        - Download icon
-        Matching exact Wireframe 15
-      */}
-      <header className="sticky top-0 z-30 flex items-center justify-between h-12 px-4 bg-white/95 backdrop-blur-md border-b border-[#E8DFDC]">
+      {/* HEADER */}
+      <header className="sticky top-0 z-30 flex items-center justify-between h-11.5 px-4 bg-white/95 backdrop-blur-md border-b border-purple-100 shrink-0">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setActiveScreen('04')}
             aria-label="Back to Home"
             className={cn(
-              'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:scale-95 transition-all -ml-1',
+              'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-purple-50 hover:text-[#3B0764] active:scale-95 transition-all -ml-1',
               focusRing,
             )}
           >
             <ChevronLeft className="size-5" strokeWidth={2} />
           </button>
-          <h1 className="font-display text-base font-bold text-slate-900 tracking-tight">
+          <h1 className="font-display text-sm font-bold text-slate-900 tracking-tight">
             Lab report
           </h1>
         </div>
 
-        <button
-          type="button"
-          onClick={handleDownload}
-          aria-label="Download PDF report"
-          className={cn(
-            'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:scale-95 transition-all',
-            focusRing,
-          )}
-        >
-          <Download className="size-4.5" strokeWidth={1.5} />
-        </button>
+        <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-full">
+          25 Nov · Neuberg Lab
+        </span>
       </header>
 
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 px-4 py-3.5 space-y-4">
+      {/* RANKED TRIAGE BODY — ZERO SCROLL WITH DISTINCT COLOR & BORDER SEPARATION */}
+      <div className="flex-1 px-4 py-3 flex flex-col justify-between gap-2.5">
         
-        {/* PUSH NOTIFICATION CARD */}
-        <div className="rounded-2xl border border-slate-300 bg-white p-3 flex items-start gap-2.5 shadow-2xs">
-          <div className="size-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-700">
-            <Bell className="size-4" strokeWidth={1.5} />
-          </div>
-          <div className="space-y-0.5">
-            <p className="font-semibold text-xs text-slate-900">
-              Push notification
-            </p>
-            <p className="text-[11px] text-slate-500 leading-tight">
-              Your blood test report is ready
-            </p>
-          </div>
-        </div>
-
-        {/* LAB DETAILS CARD */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs space-y-2.5">
-          <div className="flex items-start gap-3">
-            <div className="size-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center font-display text-xs font-bold text-rose-950 shrink-0">
-              Lab
-            </div>
-            <div className="space-y-0.5">
-              <h2 className="font-display text-xs font-bold text-slate-900">
-                Neuberg Anand Reference Laboratory
-              </h2>
-              <p className="text-[11px] text-slate-400">
-                Collected 24 Nov · Reported 25 Nov
-              </p>
-            </div>
+        {/* PRIORITY #1 GRID: ATTENTION NEEDED (High-Contrast Pink/Crimson Border & Surface) */}
+        <div className="rounded-2xl border-2 border-rose-400 bg-gradient-to-br from-[#FFF0F5] via-[#FFE4EC] to-white p-3.5 shadow-2xs space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-rose-800">
+              <AlertCircle className="size-3.5 text-rose-600" />
+              Attention needed (2)
+            </span>
+            <span className="text-[10px] font-bold bg-rose-600 text-white px-2 py-0.5 rounded-full">
+              Low
+            </span>
           </div>
 
-          <div className="border border-slate-300 rounded-md px-2.5 py-1 text-[11px] font-semibold text-slate-700 bg-slate-50 w-fit">
-            Reviewed by Dr. Ananya Rao
-          </div>
-        </div>
-
-        {/* RESULTS SECTION */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-900 uppercase tracking-wider">
-            <span>Results</span>
-            <span className="text-[10px] text-slate-400 lowercase font-normal">(sample values for demo)</span>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100 shadow-2xs overflow-hidden">
-            {RESULTS.map((res) => (
-              <div key={res.parameter} className="p-3 flex items-center justify-between text-xs">
-                <div className="space-y-0.5">
-                  <p className="font-bold text-slate-900">
+          <div className="space-y-2">
+            {ATTENTION_RESULTS.map((res) => (
+              <div
+                key={res.parameter}
+                className="rounded-xl border border-rose-200 bg-white px-3 py-2.5 flex items-center justify-between"
+              >
+                <div>
+                  <p className="font-display text-xs font-bold text-slate-900">
                     {res.parameter}
                   </p>
-                  <p className="text-[11px] text-slate-400">
-                    {res.range}
+                  <p className="text-[10px] text-slate-500">
+                    Target {res.range}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-900 tabular-nums">
+                  <span className="font-display text-sm font-bold text-rose-700 tabular-nums">
                     {res.value}
                   </span>
-                  <span
-                    className={cn(
-                      'text-[10px] font-semibold px-2 py-0.5 rounded-md border tabular-nums',
-                      res.status === 'Normal'
-                        ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
-                        : 'text-rose-700 bg-rose-50 border-rose-200',
-                    )}
-                  >
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 border border-rose-200">
                     {res.status}
                   </span>
                 </div>
@@ -146,48 +107,74 @@ export function Screen15LabReport() {
           </div>
         </div>
 
-        {/* DOCTOR'S NOTE BOX */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs space-y-1.5">
-          <h3 className="font-bold text-xs text-slate-900">
-            Doctor's note
-          </h3>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Mild iron-deficiency anaemia and vitamin D insufficiency detected. Thyroid and glucose regulation within normal limits. Start prescribed supplements and repeat CBC in 8 weeks.
+        {/* PRIORITY #2 GRID: DOCTOR'S NOTE (Distinct Royal Purple Contrast) */}
+        <div className="rounded-2xl border-2 border-purple-300 bg-[#F5F3FF] p-3.5 shadow-2xs space-y-1.5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-[#4C1D95] flex items-center gap-1.5">
+              <Stethoscope className="size-3.5 text-purple-700" />
+              {doc.name} · Note
+            </h2>
+          </div>
+          <p className="text-xs text-[#2E1065] leading-relaxed font-medium">
+            Mild iron & Vitamin D deficiency. Start supplements; retest CBC in 8 weeks.
           </p>
+        </div>
+
+        {/* PRIORITY #3 GRID: NORMAL MARKERS (Separated Calm 2-Column White/Emerald Grid) */}
+        <div className="rounded-2xl border border-emerald-200 bg-white p-3.5 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+              <CheckCircle2 className="size-3.5 text-emerald-600" />
+              Normal range (2)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {NORMAL_RESULTS.map((res) => (
+              <div
+                key={res.parameter}
+                className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-2.5 space-y-0.5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-xs font-bold text-slate-900">
+                    {res.parameter}
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-700">Normal</span>
+                </div>
+                <p className="font-bold text-xs text-emerald-900 tabular-nums">{res.value}</p>
+                <p className="text-[10px] text-slate-500">Ref {res.range}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>
 
-      {/* 
-        BOTTOM ACTION BUTTONS:
-        - Book free follow-up
-        - Download PDF
-        Matching exact Wireframe 15
-      */}
-      <div className="p-4 pt-2 pb-3 bg-[#FAF7F5] border-t border-slate-100 space-y-2">
+      {/* BOTTOM ACTIONS */}
+      <div className="p-4 pt-2 pb-3 bg-[#FAF7F5] border-t border-purple-100 flex items-center gap-2 shrink-0">
         <button
           type="button"
-          onClick={handleFollowUp}
+          onClick={handleDownload}
           className={cn(
-            'flex h-11 w-full items-center justify-center rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] active:bg-[#1C0526] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
+            'h-11 px-4 rounded-xl border border-purple-200 bg-white hover:bg-purple-50 text-xs font-semibold text-[#4C1D95] flex items-center justify-center gap-1.5 shrink-0',
+            focusRing,
+          )}
+        >
+          <Download className="size-4" />
+          <span>PDF</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveScreen('05')}
+          className={cn(
+            'flex-1 flex h-11 items-center justify-center rounded-xl bg-[#4C1D95] hover:bg-[#3B0764] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
             focusRing,
           )}
         >
           Book free follow-up
         </button>
-
-        <button
-          type="button"
-          onClick={handleDownload}
-          className={cn(
-            'flex h-11 w-full items-center justify-center rounded-xl border border-slate-300 bg-white hover:bg-slate-50 px-4 text-xs font-semibold text-slate-800 shadow-2xs active:scale-[0.99] transition-all',
-            focusRing,
-          )}
-        >
-          Download PDF
-        </button>
       </div>
-
     </div>
   )
 }

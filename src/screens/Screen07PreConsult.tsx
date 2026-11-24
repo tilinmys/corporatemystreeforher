@@ -1,5 +1,16 @@
-import { ChevronLeft, Plus } from 'lucide-react'
-import { useState } from 'react'
+import {
+  addMonths,
+  format,
+  getDaysInMonth,
+  isAfter,
+  isSameDay,
+  parseISO,
+  startOfDay,
+  startOfMonth,
+  subMonths,
+} from 'date-fns'
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { cn, focusRing } from '../lib/cn'
 import { PANEL_DOCTORS, useHerCorporateStore } from '../store/useHerCorporateStore'
 
@@ -9,6 +20,7 @@ export function Screen07PreConsult() {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
   const employeeLink = useHerCorporateStore((s) => s.employeeLink)
   const lastPeriodStart = useHerCorporateStore((s) => s.last_period_start)
+  const setLastPeriodStart = useHerCorporateStore((s) => s.setLastPeriodStart)
   const bookingDraft = useHerCorporateStore((s) => s.bookingDraft)
   const setBookingDraft = useHerCorporateStore((s) => s.setBookingDraft)
   const confirmBooking = useHerCorporateStore((s) => s.confirmBooking)
@@ -17,9 +29,24 @@ export function Screen07PreConsult() {
   const companyName = employeeLink?.company || 'Acme Tech'
   const consultsLeft = employeeLink?.consultsLeft ?? 3
 
+  const today = useMemo(() => startOfDay(new Date()), [])
+  const initialDate = useMemo(() => {
+    try {
+      const parsed = parseISO(lastPeriodStart)
+      if (!isNaN(parsed.getTime()) && !isAfter(startOfDay(parsed), today)) {
+        return startOfDay(parsed)
+      }
+    } catch {
+      // fallback
+    }
+    return today
+  }, [lastPeriodStart, today])
+
   const [concern, setConcern] = useState(bookingDraft.concern || '')
   const [selectedTags, setSelectedTags] = useState<string[]>(['Irregular periods'])
-  const [periodDate, setPeriodDate] = useState(lastPeriodStart || '2026-11-11')
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate)
+  const [viewMonth, setViewMonth] = useState<Date>(startOfMonth(initialDate))
+  const [showCalendar, setShowCalendar] = useState(false)
   const [medicines, setMedicines] = useState(bookingDraft.medicines || '')
   const [consent, setConsent] = useState(true)
 
@@ -36,46 +63,61 @@ export function Screen07PreConsult() {
     }
   }
 
+  const handlePickDate = (day: number) => {
+    const picked = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), day)
+    if (!isAfter(startOfDay(picked), today)) {
+      const normalized = startOfDay(picked)
+      setSelectedDate(normalized)
+      setLastPeriodStart(format(normalized, 'yyyy-MM-dd'))
+      setShowCalendar(false)
+    }
+  }
+
   const handleConfirm = () => {
     setBookingDraft({ concern, medicines })
     confirmBooking()
   }
 
+  const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+  const firstDayOfMonth = startOfMonth(viewMonth)
+  const daysInMonth = getDaysInMonth(viewMonth)
+  const emptyDaysPrefix = (firstDayOfMonth.getDay() + 6) % 7
+  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1)
+  const isNextMonthDisabled = isAfter(startOfMonth(addMonths(viewMonth, 1)), today)
+
   return (
     <div className="flex flex-col justify-between min-h-full bg-[#FAF7F5] text-slate-800">
       
-      {/* TOP HEADER */}
-      <header className="sticky top-0 z-30 flex items-center h-12 px-4 bg-white/95 backdrop-blur-md border-b border-rose-100">
+      <header className="sticky top-0 z-30 flex items-center h-11.5 px-4 bg-white/95 backdrop-blur-md border-b border-purple-100 shrink-0">
         <button
           type="button"
           onClick={() => setActiveScreen('06')}
           aria-label="Back to Doctor Profile"
           className={cn(
-            'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-rose-50 hover:text-[#2A0E1A] active:scale-95 transition-all -ml-1',
+            'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-purple-50 hover:text-[#3B0764] active:scale-95 transition-all -ml-1',
             focusRing,
           )}
         >
           <ChevronLeft className="size-5" strokeWidth={2} />
         </button>
-        <h1 className="ml-2 font-display text-base font-bold text-slate-900 tracking-tight">
-          Before your consult
+        <h1 className="ml-2 font-display text-sm font-bold text-slate-900 tracking-tight">
+          Pre-consult notes
         </h1>
       </header>
 
-      {/* MAIN CONTENT */}
-      <div className="flex-1 px-4 py-3.5 space-y-3.5">
+      <div className="flex-1 px-4 py-3 space-y-3">
         
-        {/* DOCTOR SUMMARY CARD */}
-        <div className="rounded-2xl border border-rose-200/70 bg-rose-50/50 p-3 flex items-center justify-between shadow-2xs">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-white border border-rose-200 text-[#2A0E1A] font-display text-xs font-bold flex items-center justify-center shrink-0">
+        {/* DOCTOR SUMMARY */}
+        <div className="rounded-2xl border border-purple-200 bg-purple-50/60 p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="size-9 rounded-xl bg-[#4C1D95] text-white font-display text-xs font-bold flex items-center justify-center shrink-0">
               {doc.initials}
             </div>
             <div>
               <h2 className="font-display text-xs font-bold text-slate-900">
                 {doc.name} · {bookingDraft.consultType === 'video' ? 'Video' : 'Clinic'}
               </h2>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-purple-800 font-medium">
                 {bookingDraft.dateLabel} · {bookingDraft.slotTime}
               </p>
             </div>
@@ -84,28 +126,25 @@ export function Screen07PreConsult() {
           <button
             type="button"
             onClick={() => setActiveScreen('06')}
-            className={cn(
-              'text-xs font-semibold text-rose-800 hover:underline px-2 py-1',
-              focusRing,
-            )}
+            className="text-xs font-bold text-[#4C1D95] hover:underline px-2 py-1"
           >
             Edit
           </button>
         </div>
 
-        {/* SECTION 1: CONCERN */}
+        {/* CONCERN + QUICK TAGS */}
         <div className="space-y-2">
-          <label htmlFor="concern-text" className="block text-xs font-semibold text-slate-800">
-            What would you like to discuss?
+          <label htmlFor="concern-text" className="block text-xs font-bold text-slate-800">
+            Concern
           </label>
           <textarea
             id="concern-text"
-            rows={3}
+            rows={2}
             value={concern}
             onChange={(e) => setConcern(e.target.value)}
-            placeholder="Describe your concern"
+            placeholder="Briefly describe symptoms"
             className={cn(
-              'block w-full rounded-xl border border-rose-200/80 bg-white p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50 transition-colors shadow-2xs resize-none',
+              'block w-full rounded-xl border border-purple-200 bg-white p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-purple-600 focus:ring-2 focus:ring-purple-200/50 resize-none',
               focusRing,
             )}
           />
@@ -119,11 +158,10 @@ export function Screen07PreConsult() {
                   type="button"
                   onClick={() => handleToggleTag(tag)}
                   className={cn(
-                    'h-7 px-3 rounded-full text-[11px] font-semibold transition-all select-none',
+                    'h-7 px-2.5 rounded-full text-[11px] font-semibold transition-all',
                     isSelected
-                      ? 'bg-[#2A0E1A] text-white shadow-2xs'
+                      ? 'bg-[#4C1D95] text-white'
                       : 'border border-rose-200 bg-white text-slate-700 hover:bg-rose-50',
-                    focusRing,
                   )}
                 >
                   {tag}
@@ -133,27 +171,90 @@ export function Screen07PreConsult() {
           </div>
         </div>
 
-        {/* LAST PERIOD START DATE */}
-        <div className="space-y-1">
-          <label htmlFor="period-date" className="block text-xs font-semibold text-slate-800">
+        {/* LAST PERIOD DATE — INTERACTIVE CALENDAR PICKER */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-bold text-slate-800">
             Last period start date
           </label>
-          <input
-            id="period-date"
-            type="text"
-            value={periodDate}
-            onChange={(e) => setPeriodDate(e.target.value)}
-            placeholder="YYYY-MM-DD"
+
+          <button
+            type="button"
+            onClick={() => setShowCalendar(!showCalendar)}
             className={cn(
-              'block h-10 w-full rounded-xl border border-rose-200/80 bg-white px-3.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50 transition-colors shadow-2xs',
+              'flex h-10 w-full items-center justify-between rounded-xl border border-rose-200 bg-[#FFF5F8] px-3.5 text-xs font-semibold text-[#3B0764] hover:border-rose-400 transition-colors',
               focusRing,
             )}
-          />
+          >
+            <span>{format(selectedDate, 'dd MMM yyyy')}</span>
+            <CalendarDays className="size-4 text-rose-600" />
+          </button>
+
+          {showCalendar && (
+            <div className="rounded-2xl border-2 border-purple-200 bg-white p-3 shadow-md space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-xs font-bold text-[#3B0764]">
+                  {format(viewMonth, 'MMMM yyyy')}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setViewMonth((m) => subMonths(m, 1))}
+                    className="grid size-6.5 place-items-center rounded-md hover:bg-purple-50 text-purple-800"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isNextMonthDisabled}
+                    onClick={() => setViewMonth((m) => addMonths(m, 1))}
+                    className="grid size-6.5 place-items-center rounded-md hover:bg-purple-50 text-purple-800 disabled:opacity-30"
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-7 text-center text-[10px] font-bold text-rose-500">
+                {weekDays.map((d, i) => (
+                  <span key={i}>{d}</span>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-1 text-center tabular-nums">
+                {Array.from({ length: emptyDaysPrefix }).map((_, i) => (
+                  <span key={`e-${i}`} className="size-7" />
+                ))}
+                {daysArray.map((day) => {
+                  const date = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), day)
+                  const isFuture = isAfter(startOfDay(date), today)
+                  const isSel = isSameDay(date, selectedDate)
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      disabled={isFuture}
+                      onClick={() => handlePickDate(day)}
+                      className={cn(
+                        'grid size-7 mx-auto place-items-center rounded-full text-[11px] font-semibold transition-all',
+                        isSel
+                          ? 'bg-[#4C1D95] text-white font-bold'
+                          : isFuture
+                            ? 'text-slate-300 cursor-not-allowed'
+                            : 'text-slate-800 hover:bg-rose-100',
+                      )}
+                    >
+                      {day}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* CURRENT MEDICINES */}
         <div className="space-y-1">
-          <label htmlFor="medicines-input" className="block text-xs font-semibold text-slate-800">
+          <label htmlFor="medicines-input" className="block text-xs font-bold text-slate-800">
             Current medicines (optional)
           </label>
           <input
@@ -161,9 +262,9 @@ export function Screen07PreConsult() {
             type="text"
             value={medicines}
             onChange={(e) => setMedicines(e.target.value)}
-            placeholder="e.g. none"
+            placeholder="e.g. None"
             className={cn(
-              'block h-10 w-full rounded-xl border border-rose-200/80 bg-white px-3.5 text-xs text-slate-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50 transition-colors shadow-2xs',
+              'block h-9.5 w-full rounded-xl border border-purple-200 bg-white px-3 text-xs text-slate-900 focus:border-purple-600 focus:ring-2 focus:ring-purple-200/50',
               focusRing,
             )}
           />
@@ -172,52 +273,45 @@ export function Screen07PreConsult() {
         {/* UPLOAD PAST REPORTS */}
         <button
           type="button"
-          className={cn(
-            'w-full h-11 rounded-xl border-2 border-dashed border-rose-200 bg-white/80 hover:bg-white flex items-center justify-center gap-1.5 text-xs font-semibold text-rose-900 hover:border-rose-400 transition-all active:scale-[0.99]',
-            focusRing,
-          )}
+          className="w-full h-10 rounded-xl border border-dashed border-purple-300 bg-white hover:bg-purple-50/40 flex items-center justify-center gap-1.5 text-xs font-semibold text-[#4C1D95] transition-colors"
         >
           <Plus className="size-4" />
-          <span>Upload past reports (optional)</span>
+          <span>Upload past reports</span>
         </button>
 
-        {/* CONSENT CHECKBOX */}
-        <label className="flex items-start gap-2.5 px-0.5 cursor-pointer select-none">
+        {/* CONSENT */}
+        <label className="flex items-center gap-2 px-0.5 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
-            className="size-4 mt-0.5 rounded border-rose-300 text-[#2A0E1A] focus:ring-rose-200"
+            className="size-4 rounded border-purple-300 text-[#4C1D95] focus:ring-purple-200"
           />
-          <span className="text-[11px] text-slate-600 leading-tight">
-            I consent to share these details with {doc.name}
+          <span className="text-[11px] text-slate-600">
+            Share securely with {doc.name}
           </span>
         </label>
 
       </div>
 
-      {/* BOTTOM FEE LEDGER & CONFIRM BUTTON */}
-      <div className="p-4 pt-3 pb-3 bg-white border-t border-rose-100 space-y-2">
+      {/* FEE FOOTER */}
+      <div className="p-4 pt-2.5 pb-3 bg-white border-t border-purple-100 space-y-2 shrink-0">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-slate-600 font-medium">Consultation fee</span>
-          <div className="flex items-center gap-2">
+          <span className="text-slate-600 font-medium">
+            {employeeLink ? `${companyName} · ${Math.max(0, consultsLeft - 1)} free left` : 'Consultation fee'}
+          </span>
+          <div className="flex items-center gap-1.5">
             <span className="text-slate-400 line-through tabular-nums">₹600</span>
-            <span className="font-bold text-slate-900 tabular-nums">₹0</span>
+            <span className="font-bold text-emerald-700 tabular-nums">₹0</span>
           </div>
         </div>
-
-        <p className="text-[10px] text-emerald-700 font-medium">
-          {employeeLink
-            ? `Covered by ${companyName} · ${Math.max(0, consultsLeft - 1)} free consults left after this`
-            : 'Complimentary first specialist consult applied'}
-        </p>
 
         <button
           type="button"
           disabled={!consent}
           onClick={handleConfirm}
           className={cn(
-            'flex h-11 w-full items-center justify-center rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] active:bg-[#1C0526] px-4 text-xs font-semibold text-white shadow-sm disabled:opacity-50 active:scale-[0.99] transition-all',
+            'flex h-11 w-full items-center justify-center rounded-xl bg-[#4C1D95] hover:bg-[#3B0764] px-4 text-xs font-semibold text-white shadow-sm disabled:opacity-50 active:scale-[0.99] transition-all',
             focusRing,
           )}
         >

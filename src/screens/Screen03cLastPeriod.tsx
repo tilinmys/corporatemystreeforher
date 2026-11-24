@@ -23,7 +23,6 @@ export function Screen03cLastPeriod() {
 
   const today = useMemo(() => startOfDay(new Date()), [])
 
-  // Parse initial selected date safely
   const initialDate = useMemo(() => {
     try {
       const parsed = parseISO(lastPeriodStart)
@@ -42,25 +41,17 @@ export function Screen03cLastPeriod() {
   const [viewMonth, setViewMonth] = useState<Date>(startOfMonth(initialDate))
   const [dontRemember, setDontRemember] = useState(false)
 
-  // Weekdays (Monday-first to match wireframe M T W T F S S)
   const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
-  // Calendar math
   const firstDayOfMonth = startOfMonth(viewMonth)
   const daysInMonth = getDaysInMonth(viewMonth)
-  // Monday = 0, Sunday = 6
   const emptyDaysPrefix = (firstDayOfMonth.getDay() + 6) % 7
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1)
 
-  const handlePrevMonth = () => {
-    setViewMonth((m) => subMonths(m, 1))
-  }
-
+  const handlePrevMonth = () => setViewMonth((m) => subMonths(m, 1))
   const handleNextMonth = () => {
     const next = addMonths(viewMonth, 1)
-    if (!isAfter(startOfMonth(next), today)) {
-      setViewMonth(next)
-    }
+    if (!isAfter(startOfMonth(next), today)) setViewMonth(next)
   }
 
   const handleSelectDay = (day: number) => {
@@ -96,71 +87,58 @@ export function Screen03cLastPeriod() {
   return (
     <div className="flex flex-col justify-between min-h-full bg-[#FAF7F5] text-slate-800">
       
-      {/* 
-        TOP HEADER:
-        - Back arrow <
-        - Title "Step 1 of 3 · Cycle setup"
-        - Skip button
-        - 3-segment progress bar
-        Matching exact Wireframe 03c
-      */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E8DFDC]">
-        <header className="flex items-center justify-between h-12 px-4">
+      {/* TOP HEADER */}
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-purple-100 shrink-0">
+        <header className="flex items-center justify-between h-11.5 px-4">
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setActiveScreen('03')}
-              aria-label="Back to Verify"
+              onClick={() => setActiveScreen('04')}
+              aria-label="Back"
               className={cn(
-                'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:scale-95 transition-all -ml-1',
+                'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-purple-50 hover:text-[#3B0764] active:scale-95 transition-all -ml-1',
                 focusRing,
               )}
             >
               <ChevronLeft className="size-5" strokeWidth={2} />
             </button>
             <h1 className="font-display text-xs font-bold text-slate-900 tracking-tight">
-              Step 1 of 3 · Cycle setup
+              Step 1 of 3
             </h1>
           </div>
 
           <button
             type="button"
             onClick={handleSkip}
-            className={cn(
-              'text-xs font-semibold text-slate-500 hover:text-slate-900 px-2 py-1 rounded-md transition-colors',
-              focusRing,
-            )}
+            className="text-xs font-semibold text-slate-500 hover:text-[#3B0764] px-2 py-1 rounded-md transition-colors"
           >
             Skip
           </button>
         </header>
 
-        {/* 3-segment Progress Bar: Bar 1 active */}
-        <div className="grid grid-cols-3 gap-1.5 px-4 pb-2.5">
-          <div className="h-1 rounded-full bg-[#2A0E1A]" />
-          <div className="h-1 rounded-full bg-slate-200" />
-          <div className="h-1 rounded-full bg-slate-200" />
+        <div className="grid grid-cols-3 gap-1.5 px-4 pb-2">
+          <div className="h-1.5 rounded-full bg-[#4C1D95]" />
+          <div className="h-1.5 rounded-full bg-purple-100" />
+          <div className="h-1.5 rounded-full bg-purple-100" />
         </div>
       </div>
 
-      {/* MAIN CONTENT AREA */}
-      <div className="flex-1 px-4 py-3.5 space-y-4">
+      {/* COMPACT ZERO-SCROLL CALENDAR BODY */}
+      <div className="flex-1 px-4 py-3 flex flex-col justify-between gap-2.5">
         
-        {/* Editorial Heading */}
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <h2 className="font-display text-xl font-bold tracking-tight text-slate-900 leading-snug">
-            When did your last period start?
+            Last period start date
           </h2>
           <p className="text-xs text-slate-500">
-            Pick the first day of your most recent period.
+            Tap the first day of your recent period.
           </p>
         </div>
 
-        {/* Interactive Calendar Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs space-y-3">
-          {/* Month Header with < > buttons */}
+        {/* Calendar Card */}
+        <div className="rounded-2xl border-2 border-purple-200/80 bg-white p-3.5 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
-            <span className="font-display text-sm font-bold text-slate-900">
+            <span className="font-display text-sm font-bold text-[#3B0764]">
               {format(viewMonth, 'MMMM yyyy')}
             </span>
             <div className="flex items-center gap-1">
@@ -168,7 +146,7 @@ export function Screen03cLastPeriod() {
                 type="button"
                 onClick={handlePrevMonth}
                 aria-label="Previous month"
-                className="grid size-7 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 active:scale-95 transition-all"
+                className="grid size-7 place-items-center rounded-lg text-purple-800 hover:bg-purple-50 active:scale-95 transition-all"
               >
                 <ChevronLeft className="size-4" />
               </button>
@@ -177,26 +155,24 @@ export function Screen03cLastPeriod() {
                 onClick={handleNextMonth}
                 disabled={isCurrentMonthFuture}
                 aria-label="Next month"
-                className="grid size-7 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-all"
+                className="grid size-7 place-items-center rounded-lg text-purple-800 hover:bg-purple-50 disabled:opacity-30 disabled:pointer-events-none active:scale-95 transition-all"
               >
                 <ChevronRight className="size-4" />
               </button>
             </div>
           </div>
 
-          {/* Weekday Row (M T W T F S S) */}
-          <div className="grid grid-cols-7 text-center text-xs font-semibold text-slate-400">
+          <div className="grid grid-cols-7 text-center text-[11px] font-bold text-rose-500">
             {weekDays.map((d, i) => (
-              <span key={i} className="py-1">
+              <span key={i} className="py-0.5">
                 {d}
               </span>
             ))}
           </div>
 
-          {/* Day Grid */}
           <div className="grid grid-cols-7 gap-1 text-center tabular-nums">
             {Array.from({ length: emptyDaysPrefix }).map((_, i) => (
-              <span key={`empty-${i}`} className="size-9" />
+              <span key={`empty-${i}`} className="size-8" />
             ))}
 
             {daysArray.map((day) => {
@@ -211,12 +187,12 @@ export function Screen03cLastPeriod() {
                   disabled={isFuture}
                   onClick={() => handleSelectDay(day)}
                   className={cn(
-                    'grid size-9 mx-auto place-items-center rounded-full text-xs font-medium transition-all',
+                    'grid size-8 mx-auto place-items-center rounded-full text-xs font-semibold transition-all',
                     isSelected
-                      ? 'bg-[#2A0E1A] text-white font-bold shadow-xs scale-105'
+                      ? 'bg-[#4C1D95] text-white font-bold shadow-xs scale-105 ring-2 ring-rose-300'
                       : isFuture
                         ? 'text-slate-300 cursor-not-allowed'
-                        : 'text-slate-800 hover:bg-rose-50 hover:text-rose-950',
+                        : 'text-slate-800 hover:bg-rose-50 hover:text-rose-800',
                   )}
                 >
                   {day}
@@ -226,48 +202,37 @@ export function Screen03cLastPeriod() {
           </div>
         </div>
 
-        {/* Checkbox: I don't remember */}
         <label className="flex items-center gap-2.5 px-1 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={dontRemember}
             onChange={handleToggleDontRemember}
-            className="size-4 rounded border-slate-300 text-rose-950 focus:ring-rose-200"
+            className="size-4 rounded border-purple-300 text-[#4C1D95] focus:ring-purple-200"
           />
           <span className="text-xs font-medium text-slate-700">
-            I don't remember
+            I don't remember exact date
           </span>
         </label>
 
-        {/* Privacy Note Box */}
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3.5 space-y-1 shadow-2xs">
-          <div className="flex items-center gap-1.5 text-xs text-slate-600">
-            <Lock className="size-3 text-rose-900" strokeWidth={1.5} />
-            <p className="text-[11px] leading-relaxed">
-              Your answers are private. {companyName} never sees your cycle data.
-            </p>
-          </div>
+        <div className="rounded-xl border border-purple-100 bg-purple-50/70 px-3 py-2 flex items-center gap-2 text-[11px] text-purple-900">
+          <Lock className="size-3.5 text-purple-700 shrink-0" />
+          <span>Private · {companyName} never sees your cycle data.</span>
         </div>
-
       </div>
 
-      {/* 
-        BOTTOM STICKY ACTION:
-        Solid "Next" button docked at bottom
-      */}
-      <div className="p-4 pt-2 pb-3 bg-[#FAF7F5]">
+      {/* BOTTOM ACTION */}
+      <div className="p-4 pt-2 pb-3 bg-[#FAF7F5] shrink-0">
         <button
           type="button"
           onClick={handleNext}
           className={cn(
-            'flex h-11 w-full items-center justify-center rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] active:bg-[#1C0526] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
+            'flex h-11.5 w-full items-center justify-center rounded-xl bg-[#4C1D95] hover:bg-[#3B0764] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
             focusRing,
           )}
         >
           Next
         </button>
       </div>
-
     </div>
   )
 }

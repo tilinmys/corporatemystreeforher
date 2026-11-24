@@ -122,9 +122,9 @@ export function Screen03bCorporateSettings() {
             <button
               type="button"
               onClick={handleQuickLinkDemo}
-              className="text-[11px] font-semibold text-rose-800 hover:underline"
+              className="text-[11px] font-semibold text-purple-800 hover:underline"
             >
-              Quick demo: Activate Acme Tech →
+              Connect Acme Tech →
             </button>
           </div>
         )}

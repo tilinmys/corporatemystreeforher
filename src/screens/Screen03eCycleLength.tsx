@@ -239,13 +239,13 @@ export function Screen03eCycleLength() {
         </div>
 
         {/* Not sure button */}
-        <div className="text-center pb-1">
+        <div className="text-center pb-0.5">
           <button
             type="button"
             onClick={handleNotSure}
-            className="text-xs font-semibold text-rose-800 hover:text-[#2A0E1A] hover:underline"
+            className="text-xs font-semibold text-[#4C1D95] hover:underline"
           >
-            Not sure? Use standard 28 days →
+            Use standard 28 days →
           </button>
         </div>
       </div>
@@ -256,7 +256,7 @@ export function Screen03eCycleLength() {
           type="button"
           onClick={handleNext}
           className={cn(
-            'flex h-11.5 w-full items-center justify-center rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] active:bg-[#1C0526] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
+            'flex h-11.5 w-full items-center justify-center rounded-xl bg-[#4C1D95] hover:bg-[#3B0764] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
             focusRing,
           )}
         >

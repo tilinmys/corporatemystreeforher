@@ -115,14 +115,16 @@ export default function App() {
   const ActivePage =
     COMPONENT_REGISTRY[activeScreen] ?? COMPONENT_REGISTRY[legacyScreen] ?? Screen01Welcome
 
+  const isSplash = activeScreen === '00' || activeScreen === 'splash'
+
   return (
     <PhoneFrameShell>
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={activeScreen}
-          initial={{ opacity: 0, y: 6 }}
+          initial={isSplash ? { opacity: 1 } : { opacity: 0, y: activeScreen === '01' ? 0 : 6 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
+          exit={isSplash ? { opacity: 0, transition: { duration: 0.12 } } : { opacity: 0, y: -4 }}
           transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
           className="flex-1 flex flex-col min-h-full"
         >

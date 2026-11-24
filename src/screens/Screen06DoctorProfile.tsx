@@ -1,4 +1,4 @@
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Video, Building2 } from 'lucide-react'
 import { useState } from 'react'
 import { cn, focusRing } from '../lib/cn'
 import { PANEL_DOCTORS, useHerCorporateStore } from '../store/useHerCorporateStore'
@@ -48,102 +48,100 @@ export function Screen06DoctorProfile() {
   return (
     <div className="flex flex-col justify-between min-h-full bg-[#FAF7F5] text-slate-800">
       
-      {/* TOP HEADER */}
-      <header className="sticky top-0 z-30 flex items-center h-12 px-4 bg-white/95 backdrop-blur-md border-b border-rose-100">
-        <button
-          type="button"
-          onClick={() => setActiveScreen('05')}
-          aria-label="Back to Doctor List"
-          className={cn(
-            'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-rose-50 hover:text-[#2A0E1A] active:scale-95 transition-all -ml-1',
-            focusRing,
-          )}
-        >
-          <ChevronLeft className="size-5" strokeWidth={2} />
-        </button>
-        <h1 className="ml-2 font-display text-base font-bold text-slate-900 tracking-tight">
-          Doctor profile
-        </h1>
+      {/* HEADER */}
+      <header className="sticky top-0 z-30 flex items-center justify-between h-11.5 px-4 bg-white/95 backdrop-blur-md border-b border-purple-100 shrink-0">
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={() => setActiveScreen('05')}
+            aria-label="Back to Doctor List"
+            className={cn(
+              'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-purple-50 hover:text-[#3B0764] active:scale-95 transition-all -ml-1',
+              focusRing,
+            )}
+          >
+            <ChevronLeft className="size-5" strokeWidth={2} />
+          </button>
+          <h1 className="ml-2 font-display text-sm font-bold text-slate-900 tracking-tight">
+            Book slot
+          </h1>
+        </div>
+        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+          {employeeLink ? `${companyName} · ₹0` : 'Available'}
+        </span>
       </header>
 
-      {/* MAIN CONTENT */}
-      <div className="flex-1 px-4 py-3.5 space-y-3.5">
+      {/* COMPACT ZERO-SCROLL BODY */}
+      <div className="flex-1 px-4 py-2.5 flex flex-col justify-between gap-2.5">
         
-        {/* DOCTOR INFO CARD */}
-        <div className="rounded-2xl border border-rose-200/80 bg-gradient-to-br from-[#FFF0F5] via-white to-white p-4 shadow-2xs space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="size-15 rounded-xl bg-rose-100 text-[#2A0E1A] border border-rose-200 font-display text-base font-bold flex items-center justify-center shadow-2xs shrink-0">
+        {/* GRID 1: DOCTOR HERO + COMPACT ABOUT INSIDE FIRST GRID */}
+        <div className="rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-[#F5F3FF] via-white to-[#FFF0F5] p-3.5 shadow-2xs space-y-2.5">
+          <div className="flex items-center gap-3">
+            <div className="size-13 rounded-xl bg-gradient-to-br from-[#4C1D95] to-[#9D174D] text-white font-display text-sm font-bold flex items-center justify-center shadow-xs shrink-0">
               {doc.initials}
             </div>
-            <div className="space-y-0.5">
-              <h2 className="font-display text-base font-bold text-slate-900">
+            <div className="min-w-0">
+              <h2 className="font-display text-base font-bold text-slate-900 truncate">
                 {doc.name}
               </h2>
-              <p className="text-xs font-medium text-rose-800">
+              <p className="text-xs font-semibold text-purple-800 truncate">
                 {doc.role} · {doc.credentials}
               </p>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 truncate">
                 {doc.experience} · {doc.languages}
               </p>
             </div>
           </div>
 
-          <div className="inline-block border border-emerald-200 rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50">
-            {employeeLink ? `Covered by ${companyName} · ₹0` : 'Specialist consultation'}
-          </div>
-        </div>
-
-        {/* ABOUT */}
-        <div className="space-y-1.5">
-          <h3 className="text-xs font-bold text-rose-900 uppercase tracking-wider">
-            About
-          </h3>
-          <p className="text-xs text-slate-600 leading-relaxed bg-white rounded-xl border border-rose-100 p-3 shadow-2xs">
+          <p className="text-[11px] text-slate-600 leading-relaxed border-t border-purple-100 pt-2 line-clamp-2">
             {doc.about}
           </p>
         </div>
 
-        {/* CONSULTATION TYPE */}
-        <div className="space-y-2">
-          <h3 className="text-xs font-bold text-rose-900 uppercase tracking-wider">
-            Consultation type
+        {/* GRID 2: CONSULTATION MODE (Pink & White Grid) */}
+        <div className="rounded-2xl border border-rose-200/80 bg-[#FFF5F8] p-3 space-y-2">
+          <h3 className="text-[11px] font-bold text-rose-900 uppercase tracking-wider">
+            Mode
           </h3>
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setConsultType('video')}
               className={cn(
-                'h-9 px-4 rounded-full text-xs font-semibold transition-all',
+                'h-9 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all',
                 consultType === 'video'
-                  ? 'bg-[#2A0E1A] text-white shadow-2xs'
+                  ? 'bg-[#4C1D95] text-white shadow-2xs'
                   : 'border border-rose-200 bg-white text-slate-700 hover:bg-rose-50',
                 focusRing,
               )}
             >
-              Video consult
+              <Video className="size-3.5" />
+              <span>Video consult</span>
             </button>
             <button
               type="button"
               onClick={() => setConsultType('inclinic')}
               className={cn(
-                'h-9 px-4 rounded-full text-xs font-semibold transition-all',
+                'h-9 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all',
                 consultType === 'inclinic'
-                  ? 'bg-[#2A0E1A] text-white shadow-2xs'
+                  ? 'bg-[#4C1D95] text-white shadow-2xs'
                   : 'border border-rose-200 bg-white text-slate-700 hover:bg-rose-50',
                 focusRing,
               )}
             >
-              In-clinic visit
+              <Building2 className="size-3.5" />
+              <span>In-clinic</span>
             </button>
           </div>
         </div>
 
-        {/* SELECT DATE */}
-        <div className="space-y-2">
-          <h3 className="text-xs font-bold text-rose-900 uppercase tracking-wider">
-            Select date
+        {/* GRID 3: DATE + TIME SLOTS (Crisp White + Purple Border) */}
+        <div className="rounded-2xl border border-purple-200 bg-white p-3 space-y-2.5 shadow-2xs">
+          <h3 className="text-[11px] font-bold text-purple-900 uppercase tracking-wider">
+            Date & Time
           </h3>
-          <div className="grid grid-cols-5 gap-2">
+
+          <div className="grid grid-cols-5 gap-1.5">
             {DATES.map((item, idx) => {
               const isSelected = selectedDateIndex === idx
               return (
@@ -152,39 +150,32 @@ export function Screen06DoctorProfile() {
                   type="button"
                   onClick={() => setSelectedDateIndex(idx)}
                   className={cn(
-                    'h-13 rounded-xl flex flex-col items-center justify-center transition-all select-none',
+                    'h-12 rounded-xl flex flex-col items-center justify-center transition-all select-none',
                     isSelected
-                      ? 'bg-[#2A0E1A] text-white shadow-2xs'
-                      : 'border border-rose-100 bg-white text-slate-700 hover:bg-rose-50',
+                      ? 'bg-[#4C1D95] text-white shadow-2xs'
+                      : 'border border-purple-100 bg-purple-50/50 text-slate-700 hover:bg-purple-100/70',
                     focusRing,
                   )}
                 >
-                  <span className="font-display text-sm font-bold tabular-nums">
+                  <span className="font-display text-sm font-bold tabular-nums leading-none">
                     {item.dayNum}
                   </span>
-                  <span className="text-[10px] font-medium opacity-80">
+                  <span className="text-[10px] font-medium opacity-85 mt-0.5">
                     {item.dayName}
                   </span>
                 </button>
               )
             })}
           </div>
-        </div>
 
-        {/* AVAILABLE SLOTS */}
-        <div className="space-y-2">
-          <h3 className="text-xs font-bold text-rose-900 uppercase tracking-wider">
-            Available slots
-          </h3>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
             {SLOTS.map((slot) => {
               const isSelected = selectedSlot === slot.time && slot.available
-
               if (!slot.available) {
                 return (
                   <div
                     key={slot.time}
-                    className="h-9.5 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 flex items-center justify-center text-xs text-slate-400 cursor-not-allowed select-none"
+                    className="h-9 rounded-xl border border-dashed border-slate-200 bg-slate-50 flex items-center justify-center text-[11px] text-slate-400 cursor-not-allowed"
                   >
                     {slot.time}
                   </div>
@@ -197,10 +188,10 @@ export function Screen06DoctorProfile() {
                   type="button"
                   onClick={() => setSelectedSlot(slot.time)}
                   className={cn(
-                    'h-9.5 rounded-xl text-xs font-semibold transition-all select-none',
+                    'h-9 rounded-xl text-[11px] font-semibold transition-all select-none',
                     isSelected
-                      ? 'bg-[#2A0E1A] text-white shadow-2xs'
-                      : 'border border-rose-100 bg-white text-slate-800 hover:bg-rose-50',
+                      ? 'bg-rose-600 text-white shadow-2xs'
+                      : 'border border-rose-200/80 bg-[#FFF7F9] text-slate-800 hover:bg-rose-100/70',
                     focusRing,
                   )}
                 >
@@ -210,15 +201,16 @@ export function Screen06DoctorProfile() {
             })}
           </div>
         </div>
+
       </div>
 
-      {/* BOTTOM STICKY ACTION */}
-      <div className="p-4 pt-2 pb-3 bg-[#FAF7F5] border-t border-rose-100">
+      {/* BOTTOM ACTION */}
+      <div className="p-4 pt-2 pb-3 bg-[#FAF7F5] border-t border-purple-100 shrink-0">
         <button
           type="button"
           onClick={handleContinue}
           className={cn(
-            'flex h-11 w-full items-center justify-center rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] active:bg-[#1C0526] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
+            'flex h-11 w-full items-center justify-center rounded-xl bg-[#4C1D95] hover:bg-[#3B0764] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
             focusRing,
           )}
         >
