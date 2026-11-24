@@ -23,6 +23,7 @@ const SLOTS = ['7–9 AM', '9–11 AM', '11–1 PM']
 export function Screen13BookBloodTest() {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
   const employeeLink = useHerCorporateStore((s) => s.employeeLink)
+  const confirmBloodTest = useHerCorporateStore((s) => s.confirmBloodTest)
   const companyName = employeeLink?.company || 'Acme Tech'
 
   const [tests, setTests] = useState<DiagnosticTest[]>(INITIAL_TESTS)
@@ -42,7 +43,13 @@ export function Screen13BookBloodTest() {
   const totalPrice = selectedTests.reduce((sum, t) => sum + t.price, 0)
 
   const handleConfirm = () => {
-    setActiveScreen('14')
+    confirmBloodTest({
+      testsSummary: selectedTests.map((t) => t.name.split(' ')[0]).join(', '),
+      collectionType,
+      address,
+      dateLabel: selectedDate,
+      slotTime: selectedSlot,
+    })
   }
 
   return (

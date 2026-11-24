@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, type ComponentType } from 'react'
 import { PhoneFrameShell } from './design-system/PhoneFrameShell'
 import { Screen00Splash } from './screens/Screen00Splash'
@@ -25,9 +26,6 @@ import { Screen16Notifications } from './screens/Screen16Notifications'
 import { useApp, type Screen } from './store/app'
 import { useHerCorporateStore } from './store/useHerCorporateStore'
 
-/**
- * Screen ID mapping between blueprint screen IDs and legacy screen names
- */
 const SCREEN_ID_TO_LEGACY: Record<string, Screen> = {
   '01': 'welcome',
   '02': 'select-company',
@@ -52,15 +50,9 @@ const SCREEN_ID_TO_LEGACY: Record<string, Screen> = {
   '16': 'notifications',
 }
 
-/**
- * High-Fidelity Mobile App Component Registry (Screens 01 through 16)
- */
 const COMPONENT_REGISTRY: Record<string, ComponentType> = {
-  // Splash & Launch Sequence
   '00': Screen00Splash,
   splash: Screen00Splash,
-
-  // Onboarding & Authentication
   '01': Screen01Welcome,
   welcome: Screen01Welcome,
   '02': Screen02SelectCompany,
@@ -70,8 +62,6 @@ const COMPONENT_REGISTRY: Record<string, ComponentType> = {
   '03b': Screen03bCorporateSettings,
   'corporate-settings': Screen03bCorporateSettings,
   profile: Screen03bCorporateSettings,
-
-  // Cycle Tracking Setup
   '03c': Screen03cLastPeriod,
   'cycle-q1': Screen03cLastPeriod,
   '03d': Screen03dPeriodLength,
@@ -80,13 +70,11 @@ const COMPONENT_REGISTRY: Record<string, ComponentType> = {
   'cycle-q3': Screen03eCycleLength,
   '03f': Screen03fSetupDone,
   'setup-done': Screen03fSetupDone,
-
-  // Core App & Consultation Flow
   '04': Screen04Home,
   today: Screen04Home,
   '05': Screen05DoctorList,
   doctors: Screen05DoctorList,
-  calendar: Screen05DoctorList,
+  calendar: Screen03fSetupDone,
   '06': Screen06DoctorProfile,
   'doctor-profile': Screen06DoctorProfile,
   '07': Screen07PreConsult,
@@ -101,15 +89,13 @@ const COMPONENT_REGISTRY: Record<string, ComponentType> = {
   'call-ended': Screen11CallEnded,
   '12': Screen12Prescription,
   prescription: Screen12Prescription,
-
-  // Diagnostics & Notifications
   '13': Screen13BookBloodTest,
   'book-blood-test': Screen13BookBloodTest,
   '14': Screen14TestBooked,
   'test-booked': Screen14TestBooked,
   '15': Screen15LabReport,
   'lab-report': Screen15LabReport,
-  care: Screen15LabReport,
+  care: Screen05DoctorList,
   '16': Screen16Notifications,
   notifications: Screen16Notifications,
 }
@@ -119,7 +105,6 @@ export default function App() {
   const legacyScreen = useApp((s) => s.screen)
   const setLegacyScreen = useApp((s) => s.setScreen)
 
-  // Synchronize legacy store one-way to avoid circular ping-pong update loops
   useEffect(() => {
     const mapped = SCREEN_ID_TO_LEGACY[activeScreen]
     if (mapped && useApp.getState().screen !== mapped) {
@@ -127,12 +112,23 @@ export default function App() {
     }
   }, [activeScreen, setLegacyScreen])
 
-  // Resolve current active page component
-  const ActivePage = COMPONENT_REGISTRY[activeScreen] ?? COMPONENT_REGISTRY[legacyScreen] ?? Screen01Welcome
+  const ActivePage =
+    COMPONENT_REGISTRY[activeScreen] ?? COMPONENT_REGISTRY[legacyScreen] ?? Screen01Welcome
 
   return (
     <PhoneFrameShell>
-      <ActivePage />
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={activeScreen}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-1 flex flex-col min-h-full"
+        >
+          <ActivePage />
+        </motion.div>
+      </AnimatePresence>
     </PhoneFrameShell>
   )
 }

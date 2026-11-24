@@ -1,10 +1,15 @@
 import { Bell, Check, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { cn, focusRing } from '../lib/cn'
-import { useHerCorporateStore } from '../store/useHerCorporateStore'
+import { PANEL_DOCTORS, useHerCorporateStore } from '../store/useHerCorporateStore'
 
 export function Screen11CallEnded() {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
+  const confirmedBooking = useHerCorporateStore((s) => s.confirmedBooking)
+  const selectedDoctorId = useHerCorporateStore((s) => s.selectedDoctorId)
+  const doc =
+    PANEL_DOCTORS.find((d) => d.id === (confirmedBooking?.doctorId || selectedDoctorId)) ??
+    PANEL_DOCTORS[0]
 
   const [rating, setRating] = useState(5)
   const [feedback, setFeedback] = useState('')
@@ -42,7 +47,7 @@ export function Screen11CallEnded() {
               Consultation complete
             </h1>
             <p className="text-xs text-slate-500 font-medium">
-              Dr. Ananya Rao · 14 min
+              {doc.name} · 14 min
             </p>
           </div>
         </div>

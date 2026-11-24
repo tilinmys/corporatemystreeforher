@@ -1,7 +1,10 @@
-import { ChevronLeft, Info } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ChevronLeft, Droplets, Minus, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { cn, focusRing } from '../lib/cn'
 import { useHerCorporateStore } from '../store/useHerCorporateStore'
+
+const DAY_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9]
 
 export function Screen03dPeriodLength() {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
@@ -26,21 +29,18 @@ export function Screen03dPeriodLength() {
     setActiveScreen('03e')
   }
 
-  // Common options displayed in the horizontal strip matching wireframe: [3] [4] [5] [6] [7]
-  const options = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+  const flowInsight =
+    days <= 2
+      ? 'Light / short duration'
+      : days <= 7
+        ? 'Typical healthy flow (3–7 days)'
+        : 'Extended duration — track comfortably'
 
   return (
     <div className="flex flex-col justify-between min-h-full bg-[#FAF7F5] text-slate-800">
       
-      {/* 
-        TOP HEADER:
-        - Back arrow <
-        - Title "Step 2 of 3 · Cycle setup"
-        - Skip button
-        - 3-segment progress bar (2 filled)
-        Matching exact Wireframe 03d
-      */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E8DFDC]">
+      {/* TOP HEADER */}
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-rose-100">
         <header className="flex items-center justify-between h-12 px-4">
           <div className="flex items-center gap-2">
             <button
@@ -48,7 +48,7 @@ export function Screen03dPeriodLength() {
               onClick={() => setActiveScreen('03c')}
               aria-label="Back to Step 1"
               className={cn(
-                'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:scale-95 transition-all -ml-1',
+                'grid size-8 place-items-center rounded-lg text-slate-700 hover:bg-rose-50 hover:text-[#2A0E1A] active:scale-95 transition-all -ml-1',
                 focusRing,
               )}
             >
@@ -63,7 +63,7 @@ export function Screen03dPeriodLength() {
             type="button"
             onClick={handleSkip}
             className={cn(
-              'text-xs font-semibold text-slate-500 hover:text-slate-900 px-2 py-1 rounded-md transition-colors',
+              'text-xs font-semibold text-slate-500 hover:text-[#2A0E1A] px-2 py-1 rounded-md transition-colors',
               focusRing,
             )}
           >
@@ -71,109 +71,175 @@ export function Screen03dPeriodLength() {
           </button>
         </header>
 
-        {/* 3-segment Progress Bar: Bars 1 & 2 active */}
+        {/* 3-segment Progress Bar (Pink + Burgundy) */}
         <div className="grid grid-cols-3 gap-1.5 px-4 pb-2.5">
-          <div className="h-1 rounded-full bg-[#2A0E1A]" />
-          <div className="h-1 rounded-full bg-[#2A0E1A]" />
-          <div className="h-1 rounded-full bg-slate-200" />
+          <div className="h-1.5 rounded-full bg-[#2A0E1A]" />
+          <div className="h-1.5 rounded-full bg-rose-500" />
+          <div className="h-1.5 rounded-full bg-rose-100" />
         </div>
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <div className="flex-1 px-4 py-5 flex flex-col justify-between space-y-6">
+      <div className="flex-1 px-4 py-4 flex flex-col justify-between space-y-4">
         
-        {/* Editorial Heading */}
+        {/* Heading */}
         <div className="space-y-1">
           <h2 className="font-display text-xl font-bold tracking-tight text-slate-900 leading-snug">
             How many days does your period usually last?
           </h2>
           <p className="text-xs text-slate-500">
-            Count the days of bleeding. Swipe to change.
+            Tap a day or use the steppers to match your flow.
           </p>
         </div>
 
-        {/* 
-          HORIZONTAL NUMBER PICKER:
-          Matching exact wireframe: [3] [4] [5] [6] [7] with prominent selected dark pill
-        */}
-        <div className="my-auto py-4 space-y-4 text-center">
-          <div className="flex items-center justify-center gap-2.5 overflow-x-auto py-2 px-1 scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {options.map((num) => {
-              const isSelected = num === days
+        {/* TACTILE PINK & WHITE HERO CARD */}
+        <div className="rounded-3xl border border-rose-200/80 bg-gradient-to-br from-[#FFF0F5] via-white to-[#FFE4EC] p-5 shadow-xs space-y-5">
+          
+          {/* Stepper + Central Animated Number */}
+          <div className="flex items-center justify-between px-2">
+            <button
+              type="button"
+              onClick={() => setDays((d) => Math.max(2, d - 1))}
+              disabled={days <= 2}
+              aria-label="Decrease period days"
+              className={cn(
+                'grid size-11 place-items-center rounded-2xl border border-rose-200 bg-white text-[#2A0E1A] shadow-2xs hover:bg-rose-50 disabled:opacity-35 active:scale-95 transition-all',
+                focusRing,
+              )}
+            >
+              <Minus className="size-4.5" strokeWidth={2.2} />
+            </button>
 
+            <div className="flex flex-col items-center text-center">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-semibold mb-1">
+                <Droplets className="size-3 text-rose-600" />
+                <span>Bleeding days</span>
+              </div>
+              <motion.div
+                key={days}
+                initial={{ scale: 0.88, opacity: 0.6 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 20 }}
+                className="flex items-baseline gap-1.5"
+              >
+                <span className="font-display text-5xl font-bold text-[#2A0E1A] tabular-nums">
+                  {days}
+                </span>
+                <span className="text-sm font-semibold text-rose-800">days</span>
+              </motion.div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setDays((d) => Math.min(9, d + 1))}
+              disabled={days >= 9}
+              aria-label="Increase period days"
+              className={cn(
+                'grid size-11 place-items-center rounded-2xl border border-rose-200 bg-white text-[#2A0E1A] shadow-2xs hover:bg-rose-50 disabled:opacity-35 active:scale-95 transition-all',
+                focusRing,
+              )}
+            >
+              <Plus className="size-4.5" strokeWidth={2.2} />
+            </button>
+          </div>
+
+          {/* Interactive Visual Week Strip (Highlights days 1..N in pink) */}
+          <div className="space-y-1.5">
+            <div className="grid grid-cols-9 gap-1.5">
+              {Array.from({ length: 9 }, (_, idx) => {
+                const dayNum = idx + 1
+                const isActive = dayNum <= days
+                return (
+                  <button
+                    key={dayNum}
+                    type="button"
+                    onClick={() => setDays(Math.max(2, dayNum))}
+                    className="flex flex-col items-center gap-1 group"
+                  >
+                    <motion.div
+                      animate={{
+                        scale: isActive ? 1 : 0.92,
+                        backgroundColor: isActive
+                          ? dayNum <= 2
+                            ? '#BE123C'
+                            : dayNum <= 5
+                              ? '#E11D48'
+                              : '#FB7185'
+                          : '#FFFFFF',
+                      }}
+                      transition={{ duration: 0.2 }}
+                      className={cn(
+                        'w-full h-9 rounded-xl border flex items-center justify-center text-[11px] font-bold tabular-nums transition-colors',
+                        isActive
+                          ? 'border-rose-400 text-white shadow-2xs'
+                          : 'border-rose-100 text-slate-400 group-hover:border-rose-300',
+                      )}
+                    >
+                      D{dayNum}
+                    </motion.div>
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-center text-[11px] font-semibold text-rose-900/80 pt-1">
+              {flowInsight}
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Preset Pills */}
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold text-slate-500 text-center">
+            Quick select
+          </p>
+          <div className="flex items-center justify-center gap-1.5 flex-wrap">
+            {DAY_OPTIONS.map((num) => {
+              const isSelected = num === days
               return (
                 <button
                   key={num}
                   type="button"
                   onClick={() => setDays(num)}
                   className={cn(
-                    'transition-all duration-200 flex flex-col items-center justify-center select-none active:scale-95',
+                    'h-9 min-w-[40px] px-3 rounded-xl text-xs font-bold tabular-nums transition-all active:scale-95',
                     isSelected
-                      ? 'w-16 h-22 rounded-2xl bg-[#2A0E1A] text-white shadow-md scale-105 ring-2 ring-rose-950/30'
-                      : 'w-13 h-18 rounded-2xl border border-slate-300 bg-white text-slate-800 hover:border-rose-300 hover:bg-rose-50/50 shadow-2xs',
+                      ? 'bg-[#2A0E1A] text-white shadow-xs'
+                      : 'bg-white border border-rose-200 text-slate-700 hover:bg-rose-50',
                     focusRing,
                   )}
                 >
-                  <span
-                    className={cn(
-                      'font-display font-bold tabular-nums',
-                      isSelected ? 'text-3xl' : 'text-lg',
-                    )}
-                  >
-                    {num}
-                  </span>
+                  {num}
                 </button>
               )
             })}
           </div>
-
-          {/* Subtitle "days" */}
-          <p className="text-xs font-semibold text-slate-500">
-            days
-          </p>
-
-          {/* Outline Button: Not sure */}
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={handleNotSure}
-              className={cn(
-                'inline-flex h-10 items-center justify-center rounded-full border border-slate-300 bg-white px-8 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 hover:border-rose-300 active:scale-95 transition-all',
-                focusRing,
-              )}
-            >
-              Not sure
-            </button>
-          </div>
         </div>
 
-        {/* Clinical Context Card to eliminate dead whitespace */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-3.5 flex items-start gap-2.5 shadow-2xs">
-          <Info className="size-4 text-rose-900 shrink-0 mt-0.5" strokeWidth={1.5} />
-          <p className="text-[11px] text-slate-600 leading-relaxed">
-            Menstrual bleeding between 3 and 7 days is considered normal by the American College of Obstetricians and Gynecologists (ACOG).
-          </p>
+        {/* Not sure button */}
+        <div className="text-center pb-1">
+          <button
+            type="button"
+            onClick={handleNotSure}
+            className="text-xs font-semibold text-rose-800 hover:text-[#2A0E1A] hover:underline"
+          >
+            Not sure? Start with 5 days →
+          </button>
         </div>
-
       </div>
 
-      {/* 
-        BOTTOM STICKY ACTION:
-        Solid "Next" button docked at bottom
-      */}
+      {/* BOTTOM STICKY ACTION */}
       <div className="p-4 pt-2 pb-3 bg-[#FAF7F5]">
         <button
           type="button"
           onClick={handleNext}
           className={cn(
-            'flex h-11 w-full items-center justify-center rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] active:bg-[#1C0526] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
+            'flex h-11.5 w-full items-center justify-center rounded-xl bg-[#2A0E1A] hover:bg-[#3D0E18] active:bg-[#1C0526] px-4 text-xs font-semibold text-white shadow-sm active:scale-[0.99] transition-all',
             focusRing,
           )}
         >
           Next
         </button>
       </div>
-
     </div>
   )
 }

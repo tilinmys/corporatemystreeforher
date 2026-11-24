@@ -4,6 +4,7 @@ import { useHerCorporateStore } from '../store/useHerCorporateStore'
 
 export function Screen14TestBooked() {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
+  const bloodTestBooking = useHerCorporateStore((s) => s.bloodTestBooking)
 
   const handleGoHome = () => {
     setActiveScreen('04')
@@ -38,21 +39,26 @@ export function Screen14TestBooked() {
               Blood test booked
             </h1>
             <p className="text-xs text-slate-500 font-mono">
-              Booking ID LB-55210
+              Booking ID {bloodTestBooking?.bookingId || 'LB-55210'}
             </p>
           </div>
         </div>
 
         {/* Booking Summary Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2.5 shadow-2xs text-xs">
+        <div className="rounded-2xl border border-rose-100 bg-white p-4 space-y-2.5 shadow-2xs text-xs">
           <div className="flex items-center justify-between">
             <span className="text-slate-500">Tests</span>
-            <span className="font-bold text-slate-900">CBC, TSH, Vit D, HbA1c</span>
+            <span className="font-bold text-slate-900">
+              {bloodTestBooking?.testsSummary || 'CBC, TSH, Vit D, HbA1c'}
+            </span>
           </div>
 
-          <div className="flex items-center justify-between border-t border-slate-100 pt-2">
+          <div className="flex items-center justify-between border-t border-rose-50 pt-2">
             <span className="text-slate-500">Collection</span>
-            <span className="font-semibold text-slate-900">Home · Tue 24, 7–9 AM</span>
+            <span className="font-semibold text-slate-900">
+              {bloodTestBooking?.collectionType === 'lab' ? 'Lab' : 'Home'} ·{' '}
+              {bloodTestBooking?.dateLabel || 'Tue 24'}, {bloodTestBooking?.slotTime || '7–9 AM'}
+            </span>
           </div>
 
           <div className="flex items-center justify-between border-t border-slate-100 pt-2">

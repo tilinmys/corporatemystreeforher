@@ -12,6 +12,74 @@ export interface Company {
   walletAmount: number
 }
 
+export interface PanelDoctor {
+  id: string
+  name: string
+  role: string
+  specialtyTag: 'Gynaecology' | 'PCOS' | 'Fertility' | 'Menopause'
+  credentials: string
+  experience: string
+  languages: string
+  nextSlot: string
+  initials: string
+  about: string
+}
+
+export const PANEL_DOCTORS: PanelDoctor[] = [
+  {
+    id: 'dr-ananya',
+    name: 'Dr. Ananya Rao',
+    role: 'Gynaecologist',
+    specialtyTag: 'Gynaecology',
+    credentials: 'MBBS, MS (OBG)',
+    experience: '12 yrs',
+    languages: 'English, Hindi, Kannada',
+    nextSlot: 'Today, 4:30 PM',
+    initials: 'AR',
+    about:
+      "Senior specialist with over 12 years of clinical practice in women's health, menstrual care, PCOS management, and preconception wellness.",
+  },
+  {
+    id: 'dr-meera',
+    name: 'Dr. Meera Iyer',
+    role: 'PCOS & Endocrinology',
+    specialtyTag: 'PCOS',
+    credentials: 'MBBS, MD, DNB',
+    experience: '9 yrs',
+    languages: 'English, Tamil',
+    nextSlot: 'Today, 6:00 PM',
+    initials: 'MI',
+    about:
+      'Endocrine & PCOS specialist focused on hormonal balance, insulin resistance, thyroid wellness, and sustainable cycle regulation.',
+  },
+  {
+    id: 'dr-kavya',
+    name: 'Dr. Kavya Nair',
+    role: 'Fertility Specialist',
+    specialtyTag: 'Fertility',
+    credentials: 'MBBS, MS, FRM',
+    experience: '15 yrs',
+    languages: 'English, Malayalam',
+    nextSlot: 'Tomorrow, 10:00 AM',
+    initials: 'KN',
+    about:
+      'Fertility & reproductive medicine consultant guiding preconception care, ovulation tracking, and gentle clinical diagnostics.',
+  },
+  {
+    id: 'dr-aditi',
+    name: 'Dr. Aditi Deshmukh',
+    role: 'Menopause & Hormonal Care',
+    specialtyTag: 'Menopause',
+    credentials: 'MBBS, DGO',
+    experience: '14 yrs',
+    languages: 'English, Marathi, Hindi',
+    nextSlot: 'Tomorrow, 12:00 PM',
+    initials: 'AD',
+    about:
+      'Dedicated clinician for perimenopause, bone & metabolic health, sleep quality, and midlife women’s preventive wellness.',
+  },
+]
+
 export interface EmployeeLink {
   company: string
   email: string
@@ -25,6 +93,32 @@ export interface EmployeeLink {
   walletTotal: number
   showCorporateCareOnHome: boolean
   linkedAt: number
+}
+
+export interface BookingDraft {
+  doctorId: string
+  consultType: 'video' | 'inclinic'
+  dateLabel: string
+  slotTime: string
+  concern: string
+  medicines: string
+}
+
+export interface ConfirmedBooking {
+  bookingId: string
+  doctorId: string
+  consultType: 'video' | 'inclinic'
+  dateLabel: string
+  slotTime: string
+}
+
+export interface BloodTestBooking {
+  bookingId: string
+  testsSummary: string
+  collectionType: 'home' | 'lab'
+  address: string
+  dateLabel: string
+  slotTime: string
 }
 
 export interface NotificationBanner {
@@ -156,7 +250,7 @@ export const DEFAULT_USER: UserProfile = {
 }
 
 interface HerCorporateState {
-  activeScreen: string // '01', '02', '03', '03b', '03c', '04', etc.
+  activeScreen: string
   selectedCompany: Company | null
   employeeLink: EmployeeLink | null
   companies: Company[]
@@ -171,6 +265,12 @@ interface HerCorporateState {
   cycle_length: number
   cycleSetupSkipped: boolean
 
+  // Consult & Test State
+  selectedDoctorId: string
+  bookingDraft: BookingDraft
+  confirmedBooking: ConfirmedBooking | null
+  bloodTestBooking: BloodTestBooking | null
+
   // Actions
   setActiveScreen: (screen: string) => void
   setSelectedCompany: (company: Company | null) => void
@@ -184,6 +284,11 @@ interface HerCorporateState {
   setPeriodLength: (days: number) => void
   setCycleLength: (days: number) => void
   setCycleSetupSkipped: (skipped: boolean) => void
+  setSelectedDoctorId: (id: string) => void
+  setBookingDraft: (patch: Partial<BookingDraft>) => void
+  confirmBooking: () => void
+  cancelBooking: () => void
+  confirmBloodTest: (data: Omit<BloodTestBooking, 'bookingId'>) => void
   dismissBanner: () => void
   pushBanner: (n: { title: string; body: string; targetScreen?: string }) => void
   resetDemo: () => void
@@ -191,25 +296,47 @@ interface HerCorporateState {
 
 function getDefaultLastPeriodDate(): string {
   const d = new Date()
-  d.setDate(d.getDate() - 10)
+  d.setDate(d.getDate() - 13)
   return d.toISOString().slice(0, 10)
 }
 
+const DEFAULT_BOOKING_DRAFT: BookingDraft = {
+  doctorId: 'dr-ananya',
+  consultType: 'video',
+  dateLabel: 'Today, 24 Nov',
+  slotTime: '4:30 PM',
+  concern: '',
+  medicines: '',
+}
+
+const DEFAULT_CONFIRMED_BOOKING: ConfirmedBooking = {
+  bookingId: 'MS-10482',
+  doctorId: 'dr-ananya',
+  consultType: 'video',
+  dateLabel: 'Today',
+  slotTime: '4:30 PM',
+}
+
 export const useHerCorporateStore = create<HerCorporateState>()((set, get) => ({
-  activeScreen: '01',
+  activeScreen: '00',
   selectedCompany: SEEDED_COMPANIES[0],
-  employeeLink: null, // Starts unlinked so user can experience Screen 01 -> 02 -> 03 flow, or State A in 03b
+  employeeLink: null,
   companies: SEEDED_COMPANIES,
   banner: null,
   user: DEFAULT_USER,
   isAuthenticated: false,
   isAuthModalOpen: false,
 
-  // Cycle defaults
+  // Cycle defaults (Day 14 — Ovulatory window by default so pink grid shines!)
   last_period_start: getDefaultLastPeriodDate(),
   period_length: 5,
   cycle_length: 28,
   cycleSetupSkipped: false,
+
+  selectedDoctorId: 'dr-ananya',
+  bookingDraft: DEFAULT_BOOKING_DRAFT,
+  confirmedBooking: DEFAULT_CONFIRMED_BOOKING,
+  bloodTestBooking: null,
 
   setActiveScreen: (activeScreen) => set({ activeScreen }),
 
@@ -228,7 +355,7 @@ export const useHerCorporateStore = create<HerCorporateState>()((set, get) => ({
     })
     get().pushBanner({
       title: 'Welcome back, Priya',
-      body: 'You are signed into your private Her health account.',
+      body: 'Signed into your private Her health space.',
       targetScreen: '04',
     })
   },
@@ -245,11 +372,59 @@ export const useHerCorporateStore = create<HerCorporateState>()((set, get) => ({
   setCycleLength: (cycle_length) => set({ cycle_length }),
   setCycleSetupSkipped: (cycleSetupSkipped) => set({ cycleSetupSkipped }),
 
+  setSelectedDoctorId: (selectedDoctorId) =>
+    set((s) => ({
+      selectedDoctorId,
+      bookingDraft: { ...s.bookingDraft, doctorId: selectedDoctorId },
+    })),
+
+  setBookingDraft: (patch) =>
+    set((s) => ({
+      bookingDraft: { ...s.bookingDraft, ...patch },
+    })),
+
+  confirmBooking: () => {
+    const draft = get().bookingDraft
+    const link = get().employeeLink
+    const confirmed: ConfirmedBooking = {
+      bookingId: `MS-${Math.floor(10000 + Math.random() * 89999)}`,
+      doctorId: draft.doctorId,
+      consultType: draft.consultType,
+      dateLabel: draft.dateLabel,
+      slotTime: draft.slotTime,
+    }
+    set({
+      confirmedBooking: confirmed,
+      employeeLink: link
+        ? { ...link, consultsLeft: Math.max(0, link.consultsLeft - 1) }
+        : null,
+      activeScreen: '08',
+    })
+  },
+
+  cancelBooking: () => {
+    set({ confirmedBooking: null, activeScreen: '05' })
+  },
+
+  confirmBloodTest: (data) => {
+    const link = get().employeeLink
+    set({
+      bloodTestBooking: {
+        bookingId: `LB-${Math.floor(50000 + Math.random() * 49999)}`,
+        ...data,
+      },
+      employeeLink: link
+        ? { ...link, walletLeft: Math.max(0, link.walletLeft - 2400) }
+        : null,
+      activeScreen: '14',
+    })
+  },
+
   linkCompany: (data) => {
     const comp = get().selectedCompany || SEEDED_COMPANIES[0]
     const newLink: EmployeeLink = {
       company: comp.name,
-      email: data?.email || 'priya@acmetech.com',
+      email: data?.email || `priya@${comp.domain}`,
       employeeId: data?.employeeId || 'ACM-2291',
       planValidity: '31 Mar 2027',
       consultsLeft: 3,
@@ -265,10 +440,9 @@ export const useHerCorporateStore = create<HerCorporateState>()((set, get) => ({
 
     set({ employeeLink: newLink })
 
-    // Fire push banner
     get().pushBanner({
-      title: 'Company verified & linked',
-      body: `Your ${newLink.company} healthcare plan is now active. ₹0 copay on specialist consults.`,
+      title: 'Company linked',
+      body: `${newLink.company} plan active · ₹0 copay enabled.`,
       targetScreen: '04',
     })
   },
@@ -279,7 +453,7 @@ export const useHerCorporateStore = create<HerCorporateState>()((set, get) => ({
     get().pushBanner({
       title: 'Company unlinked',
       body: prev
-        ? `${prev} plan paused. Your private Her health and cycle records remain 100% intact.`
+        ? `${prev} plan paused. Your private Her data stays safe.`
         : 'Corporate plan unlinked.',
       targetScreen: '03b',
     })
@@ -307,7 +481,7 @@ export const useHerCorporateStore = create<HerCorporateState>()((set, get) => ({
 
   resetDemo: () =>
     set({
-      activeScreen: '01',
+      activeScreen: '00',
       selectedCompany: SEEDED_COMPANIES[0],
       employeeLink: null,
       user: DEFAULT_USER,
@@ -317,10 +491,14 @@ export const useHerCorporateStore = create<HerCorporateState>()((set, get) => ({
       period_length: 5,
       cycle_length: 28,
       cycleSetupSkipped: false,
+      selectedDoctorId: 'dr-ananya',
+      bookingDraft: DEFAULT_BOOKING_DRAFT,
+      confirmedBooking: DEFAULT_CONFIRMED_BOOKING,
+      bloodTestBooking: null,
       banner: {
         id: 'reset',
         title: 'Demo Reset',
-        body: 'Screens, inputs, and corporate link returned to initial state.',
+        body: 'Returned to launch sequence with clean default state.',
         targetScreen: '01',
         at: Date.now(),
       },

@@ -8,7 +8,7 @@
  */
 import type { Doctor } from '../data/doctors'
 import { cardHover, cardSurface, cn, focusRing } from '../lib/cn'
-import { FiArrowRight, FiClock, FiStar, RiShieldCheckLine } from './icons'
+import { FiArrowRight, FiClock, RiShieldCheckLine } from './icons'
 
 function Portrait({ doctor }: { doctor: Doctor }) {
   if (doctor.portrait) {
@@ -69,12 +69,6 @@ export function DoctorCard({
             <h3 className="font-display text-[1.05rem] leading-snug font-semibold text-ink @lg:text-xl">
               {doctor.name}
             </h3>
-            {doctor.rating && (
-              <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                <FiStar className="size-3 fill-amber-500 text-amber-500" />
-                {doctor.rating}
-              </span>
-            )}
           </div>
           <p className="mt-0.5 text-[13px] font-medium text-burgundy">{doctor.specialty}</p>
           <p className="mt-1 hidden text-xs text-muted @lg:block">{doctor.credentials}</p>

@@ -41,10 +41,8 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
   const resetDemo = useHerCorporateStore((s) => s.resetDemo)
   const [time, setTime] = useState('9:41')
-  // Default to compact iPhone (412px) as requested by user
   const [phoneSize, setPhoneSize] = useState<PhoneSize>('iphone')
 
-  // Live clock updating accurately
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
@@ -58,9 +56,9 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <div className="relative min-h-dvh w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#FDF2F4] via-[#FAF7F5] to-[#F3EAE6] text-slate-800 flex flex-col items-center justify-center sm:py-3 sm:px-4 antialiased selection:bg-rose-100 selection:text-rose-950">
+    <div className="relative min-h-dvh w-full bg-[#FAF7F5] sm:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] sm:from-[#FDF2F4] sm:via-[#FAF7F5] sm:to-[#F3EAE6] text-slate-800 flex flex-col items-center justify-center sm:py-3 sm:px-4 antialiased selection:bg-rose-100 selection:text-rose-950">
       
-      {/* Top Desktop Floating Toolbar: Compact, subtle, professional */}
+      {/* Top Desktop Floating Toolbar (Hidden on real mobile devices) */}
       <aside className="w-full max-w-4xl mb-2 hidden sm:flex items-center justify-between px-3.5 py-1.5 bg-white/95 backdrop-blur-md rounded-2xl border border-[#E8DFDC] shadow-xs shrink-0">
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-rose-50 text-rose-900 font-semibold text-xs border border-rose-200">
@@ -73,9 +71,7 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
           </span>
         </div>
 
-        {/* Screen Switcher with Dropdown + Concise Pills */}
         <div className="flex items-center gap-2 max-w-xl px-1">
-          {/* Quick Jump Dropdown */}
           <select
             value={activeScreen}
             onChange={(e) => setActiveScreen(e.target.value)}
@@ -89,7 +85,6 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
             ))}
           </select>
 
-          {/* Numbered Quick Pills */}
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-0.5">
             {SCREENS.map((s) => (
               <button
@@ -110,7 +105,6 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        {/* Controls: Size toggle & Reset */}
         <div className="flex items-center gap-1.5">
           <div className="flex items-center bg-slate-100 rounded-lg p-0.5 text-[11px] font-semibold text-slate-600">
             <button
@@ -148,7 +142,7 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={resetDemo}
-            title="Reset back to Screen 01 with default state"
+            title="Reset back to Splash with default state"
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-rose-900 hover:bg-rose-50 border border-slate-200 transition-colors"
           >
             <RotateCcw className="size-3.5" strokeWidth={1.5} />
@@ -158,13 +152,13 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
       </aside>
 
       {/* 
-        COMPACT IPHONE CHASSIS:
-        - Sleek authentic proportions matching modern iPhone (412px standard)
-        - Authentic Dark Titanium bezel, Dynamic Island, side buttons, and iOS home bar
+        RESPONSIVE CONTAINER:
+        - Mobile (< 640px): True edge-to-edge full-screen native web app (NO fake notch, NO outer phone frame).
+        - Desktop (>= 640px): Realistic compact iPhone chassis (412px standard).
       */}
       <div
         className={cn(
-          'w-full h-dvh flex flex-col sm:rounded-[48px] sm:p-[10px] sm:bg-[#181615] sm:shadow-[0_25px_60px_-15px_rgba(42,14,26,0.35),0_0_0_1px_rgba(255,255,255,0.1),0_0_0_6px_#272422,0_0_0_8px_#3E3936] relative transition-all duration-300 min-h-0',
+          'w-full h-dvh flex flex-col sm:rounded-[48px] sm:p-[10px] sm:bg-[#181615] sm:shadow-[0_25px_60px_-15px_rgba(42,14,26,0.35),0_0_0_1px_rgba(255,255,255,0.1),0_0_0_6px_#272422,0_0_0_8px_#3E3936] relative transition-all duration-300',
           phoneSize === 'iphone'
             ? 'sm:w-[412px] sm:h-[874px] sm:max-h-[94vh]'
             : phoneSize === 'iphone-max'
@@ -172,18 +166,17 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
             : 'sm:w-[520px] sm:h-[960px] sm:max-h-[96vh]',
         )}
       >
-        {/* Physical Button Accents (Action button, Volume up/down, Side button) */}
+        {/* Physical Button Accents (Desktop only) */}
         <div className="hidden sm:block absolute -left-[10px] top-24 w-[2.5px] h-7 bg-[#3E3936] rounded-l-xs" />
         <div className="hidden sm:block absolute -left-[10px] top-35 w-[2.5px] h-11 bg-[#3E3936] rounded-l-xs" />
         <div className="hidden sm:block absolute -left-[10px] top-49 w-[2.5px] h-11 bg-[#3E3936] rounded-l-xs" />
         <div className="hidden sm:block absolute -right-[10px] top-32 w-[2.5px] h-15 bg-[#3E3936] rounded-r-xs" />
 
         {/* Inner Phone Screen Container */}
-        <div className="relative flex flex-col flex-1 w-full h-full bg-[#FAF7F5] sm:rounded-[38px] overflow-hidden min-h-0 shadow-inner">
+        <div className="relative flex flex-col flex-1 w-full h-full min-h-0 bg-[#FAF7F5] sm:rounded-[38px] overflow-hidden sm:shadow-inner">
           
-          {/* iOS Status Bar */}
-          <div className="relative z-40 flex items-center justify-between px-6 pt-3 pb-1 bg-transparent select-none shrink-0">
-            {/* Time */}
+          {/* Simulated iOS Status Bar & Dynamic Island (Desktop preview ONLY — hidden on real mobile!) */}
+          <div className="hidden sm:flex relative z-40 items-center justify-between px-6 pt-3 pb-1 bg-transparent select-none shrink-0">
             <span className="font-semibold text-xs tracking-tight text-slate-900 pl-1 tabular-nums">
               {time}
             </span>
@@ -194,7 +187,6 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
               <span className="size-1.5 rounded-full bg-[#111] ring-1 ring-emerald-500/30" />
             </div>
 
-            {/* Status Icons: Cellular, Wifi, Battery */}
             <div className="flex items-center gap-1.5 text-slate-800 pr-1">
               <span className="flex items-end gap-[1.5px] h-2.5">
                 <span className="w-[2.5px] h-1 bg-slate-800 rounded-2xs" />
@@ -209,15 +201,15 @@ export function PhoneFrameShell({ children }: { children: ReactNode }) {
 
           {/* 
             Main App Content Viewport:
-            Silky smooth kinetic scroll on all screens without getting stuck!
+            Edge-to-edge on real mobile (pt-safe pb-safe), smooth scroll in desktop mockup
           */}
-          <div className="relative flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden flex flex-col touch-pan-y scrollbar-none">
+          <div className="relative flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden flex flex-col touch-pan-y scrollbar-none pt-safe pb-safe sm:pt-0 sm:pb-0">
             {children}
             <NotificationToast />
           </div>
 
-          {/* iOS Home Indicator Bar */}
-          <div className="relative z-40 w-full py-1.5 flex justify-center bg-transparent pointer-events-none shrink-0">
+          {/* Simulated iOS Home Indicator Bar (Desktop preview ONLY — hidden on real mobile!) */}
+          <div className="hidden sm:flex relative z-40 w-full py-1.5 justify-center bg-transparent pointer-events-none shrink-0">
             <div className="w-32 h-1 bg-slate-400/50 rounded-full" />
           </div>
 

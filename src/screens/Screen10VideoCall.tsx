@@ -9,10 +9,15 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { cn } from '../lib/cn'
-import { useHerCorporateStore } from '../store/useHerCorporateStore'
+import { PANEL_DOCTORS, useHerCorporateStore } from '../store/useHerCorporateStore'
 
 export function Screen10VideoCall() {
   const setActiveScreen = useHerCorporateStore((s) => s.setActiveScreen)
+  const confirmedBooking = useHerCorporateStore((s) => s.confirmedBooking)
+  const selectedDoctorId = useHerCorporateStore((s) => s.selectedDoctorId)
+  const doc =
+    PANEL_DOCTORS.find((d) => d.id === (confirmedBooking?.doctorId || selectedDoctorId)) ??
+    PANEL_DOCTORS[0]
 
   const [seconds, setSeconds] = useState(522) // starts around 08:42
   const [isMuted, setIsMuted] = useState(false)
@@ -50,10 +55,10 @@ export function Screen10VideoCall() {
       <header className="flex items-center justify-between h-14 px-4 bg-white border-b border-[#E8DFDC] shrink-0">
         <div>
           <h1 className="font-display text-sm font-bold text-slate-900 leading-tight">
-            Dr. Ananya Rao
+            {doc.name}
           </h1>
           <p className="text-xs text-slate-500">
-            Gynaecologist
+            {doc.role}
           </p>
         </div>
 
@@ -76,7 +81,7 @@ export function Screen10VideoCall() {
           <div className="relative flex flex-col items-center space-y-3 z-10 text-center">
             <div className="size-20 rounded-full bg-rose-950/80 border-2 border-rose-400/40 flex items-center justify-center shadow-lg relative">
               <span className="font-display text-2xl font-bold text-rose-200">
-                AR
+                {doc.initials}
               </span>
               <span className="absolute bottom-1 right-1 size-3.5 rounded-full bg-emerald-500 border-2 border-[#1C1417]" />
             </div>
