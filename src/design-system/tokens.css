@@ -1,0 +1,15 @@
+:root {
+  --font-display: 'Fraunces', 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+.tabular-clinical {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}

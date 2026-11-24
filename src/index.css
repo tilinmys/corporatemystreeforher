@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+@import './design-system/tokens.css';
+
+/*
+ * Shell breakpoint: lg (1024px).
+ *   < 1024px  → native-feeling phone app (sticky header + fixed 4-tab bottom bar)
+ *   ≥ 1024px  → desktop website (248px sidebar + top utility bar), content max 1320px
+ * Components adapt to their own width with @container queries.
+ */
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-lg: 64rem;
+
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces', 'Instrument Serif', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Clinical Burgundy, Royal Purple & White Palette */
+  --color-burgundy: #641e2b;
+  --color-burgundy-50: #f4e9ec;
+  --color-burgundy-100: #ead3d9;
+  --color-burgundy-200: #d9aeb9;
+  --color-burgundy-400: #a5495b;
+  --color-burgundy-500: #8a2f40;
+  --color-burgundy-700: #4e1621;
+  --color-burgundy-900: #2e0c13;
+
+  /* Royal Purple Palette */
+  --color-purple: #581c87;
+  --color-purple-50: #f5f3ff;
+  --color-purple-100: #ede9fe;
+  --color-purple-200: #ddd6fe;
+  --color-purple-600: #7e22ce;
+  --color-purple-700: #6b21a8;
+  --color-purple-800: #581c87;
+  --color-purple-900: #3b0764;
+  --color-oxblood: #3d0e18;
+
+  --color-ink: #1f1a1d;
+  --color-muted: #6b6168;
+  --color-hairline: #e8dfdc;
+  --color-porcelain: #faf7f5;
+  --color-surface: #ffffff;
+  --color-covered: #1d6b4f;
+}
+
+:root {
+  --header-h: 3.5rem;
+  --tabbar-h: 4rem;
+  --sidebar-w: 248px;
+}
+
+@media (width >= 64rem) {
+  :root {
+    --header-h: 4rem;
+  }
+}
+
+@utility pb-tabbar {
+  padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+}
+@utility bottom-tabbar {
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+@utility top-safe {
+  top: calc(env(safe-area-inset-top) + 0.75rem);
+}
+
+@layer base {
+  html {
+    @apply bg-porcelain font-sans text-ink antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
